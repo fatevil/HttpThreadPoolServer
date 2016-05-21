@@ -7,6 +7,7 @@ import java.io.*;
  * Created by marek on 21.5.16.
  */
 public class PutHandler implements HttpHandler {
+
     @Override
     public void handle(HttpExchange t) throws IOException {
 
@@ -23,10 +24,10 @@ public class PutHandler implements HttpHandler {
 
             String contentDisposition = t.getRequestHeaders().getFirst("Content-Disposition");
             int fileNamePosition = contentDisposition.lastIndexOf("filename");
-            String filename = contentDisposition.substring(fileNamePosition + 9, contentDisposition.length() - 1);
+            String filename = contentDisposition.substring(fileNamePosition + 9);
 
             File outputFile =
-                    new File("files", filename);
+                    new File(Server.FILES_DIR, filename);
 
             if (!outputFile.isFile() && !outputFile.createNewFile()) {
                 throw new IOException("Error creating new file: " + outputFile.getAbsolutePath());
@@ -42,12 +43,14 @@ public class PutHandler implements HttpHandler {
             out.close();
             in.close();
 
+            System.out.printf("We recieved file \"%s\"!%n", filename);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-        String response = "ty";
+        String response = "Got the file you sent me, thank you!";
         t.sendResponseHeaders(200, response.length());
         OutputStream os = t.getResponseBody();
         os.write(response.getBytes());

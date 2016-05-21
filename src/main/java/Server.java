@@ -1,6 +1,4 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +12,12 @@ import java.util.concurrent.TimeUnit;
  * Created by marek on 21.5.16.
  */
 public class Server implements Runnable {
+
+    static final String FILES_DIR = "files";
+    static final String CONTENT_DIR = "web_conent";
+
+    private final String USER_NAME = "user";
+    private final String USER_PASSWORD = "password";
 
     private final int corePoolSize;
     private final int maxPoolSize;
@@ -42,7 +46,14 @@ public class Server implements Runnable {
         try {
             server = HttpServer.create(new InetSocketAddress(8000), 0);
 
-            server.createContext("/", new RequestHandler());
+            HttpContext cc = server.createContext("/", new RequestHandler());
+            cc.setAuthenticator(new BasicAuthenticator("test") {
+                @Override
+                public boolean checkCredentials(String user, String pwd) {
+                    return user.equals(USER_NAME) && pwd.equals(USER_PASSWORD);
+                }
+            });
+
 
             ExecutorService threadPoolExecutor =
                     new ThreadPoolExecutor(
@@ -54,7 +65,8 @@ public class Server implements Runnable {
                     );
 
 
-            createDirIfNotExists("files");
+            createDirIfNotExists(FILES_DIR);
+            createDirIfNotExists(CONTENT_DIR);
             server.setExecutor(threadPoolExecutor); // creates a default executor
             server.start();
         } catch (IOException e) {
@@ -64,7 +76,7 @@ public class Server implements Runnable {
     }
 
     public void createDirIfNotExists(String directoryName) {
-        File theDir = new File("new folder");
+        File theDir = new File(directoryName);
 
         // if the directory does not exist, create it
         if (!theDir.exists()) {
@@ -87,6 +99,8 @@ public class Server implements Runnable {
     static class RequestHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
+            System.out.println("Made connection!");
+
             switch (t.getRequestMethod()) {
                 case "GET":
                     new GetHandler().handle(t);
