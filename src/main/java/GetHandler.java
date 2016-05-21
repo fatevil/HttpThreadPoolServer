@@ -1,71 +1,70 @@
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Created by marek on 21.5.16.
  */
-public class GetHandler implements HttpHandler {
+public class GetHandler extends AbstractHttpHandler {
 
     @Override
-    public void handle(HttpExchange t) throws IOException {
+    public void handle(HttpExchange t) {
         String responseDataType = t.getRequestHeaders().getFirst("Accept");
-        System.out.println(responseDataType);
 
         if (responseDataType.equals("*/*") || responseDataType.contains("text")) {
-            String filename = t.getRequestURI().toString();
-            if (filename.equals("/")) {
-                filename = "/index.html";
-            }
-
-            File outputFile = new File(Server.CONTENT_DIR, filename);
-
-            if (!outputFile.exists()) {
-                String response = "It doesn't exist!";
-                t.sendResponseHeaders(404, response.length());
-                OutputStream os = t.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
-            }
-
-
-            String response = FileUtils.readFileToString(outputFile);
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+            giveTextReponse(t);
         } else {
-            String filename = t.getRequestURI().toString();
-            File outputFile = new File(Server.FILES_DIR, filename);
-
-            if (!outputFile.exists()) {
-                String response = "It doesn't exist!";
-                t.sendResponseHeaders(404, response.length());
-                OutputStream os = t.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
-            }
-
-
-            // add the required response header for a PDF file
-            Headers h = t.getResponseHeaders();
-            h.add("Content-Type", "application/x-www-form-urlencoded");
-
-            byte[] bytearray = new byte[(int) outputFile.length()];
-            FileInputStream fis = new FileInputStream(outputFile);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            bis.read(bytearray, 0, bytearray.length);
-
-            // ok, we are ready to send the response.
-            t.sendResponseHeaders(200, outputFile.length());
-            OutputStream os = t.getResponseBody();
-            os.write(bytearray, 0, bytearray.length);
-            os.close();
-
-
+            giveFileReponse(t);
         }
+    }
+
+    private void giveFileReponse(HttpExchange t) {
+        String filename = t.getRequestURI().toString();
+        File outputFile = new File(Server.FILES_DIR, filename);
+
+        if (!outputFile.exists())
+            sendResponseAndClose(404, "File doesn't exist!", t);
+
+
+        // add the required response header for a PDF file
+        Headers h = t.getResponseHeaders();
+        h.add("Content-Type", "application/x-www-form-urlencoded");
+
+        byte[] bytearray = new byte[(int) outputFile.length()];
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        try {
+            fis = new FileInputStream(outputFile);
+            bis = new BufferedInputStream(fis);
+            bis.read(bytearray, 0, bytearray.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        sendDataAndClose(200, bytearray, outputFile.length(), t);
+    }
+
+    private void giveTextReponse(HttpExchange t) {
+        String filename = t.getRequestURI().toString();
+        if (filename.equals("/")) {
+            filename = "/index.html";
+        }
+        File outputFile = new File(Server.CONTENT_DIR, filename);
+
+        if (!outputFile.exists())
+            sendResponseAndClose(404, "File doesn't exist!", t);
+
+        String response = null;
+        try {
+            response = FileUtils.readFileToString(outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sendResponseAndClose(200, response, t);
     }
 }

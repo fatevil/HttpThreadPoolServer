@@ -1,8 +1,6 @@
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -11,23 +9,18 @@ import java.nio.file.Paths;
 /**
  * Created by marek on 21.5.16.
  */
-public class DeleteHandler implements HttpHandler {
+public class DeleteHandler extends AbstractHttpHandler {
     @Override
     public void handle(HttpExchange t) throws IOException {
         String response;
         if (delete(t.getRequestURI().toString())) {
-            response = "Deleted!";
-            t.sendResponseHeaders(200, response.length());
+            sendResponseAndClose(200, "Deleted!", t);
         } else {
-            response = "It didn't work out! I'm sorry :(.";
-            t.sendResponseHeaders(300, response.length());
+            sendResponseAndClose(300, "It didn't work out! I'm sorry :(.", t);
         }
-        OutputStream os = t.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
     }
 
-    public boolean delete(String path) {
+    private boolean delete(String path) {
         try {
             Files.delete(Paths.get(String.format("%s%s", Server.FILES_DIR, path)));
             System.out.printf("Succesfully deleted %s%s%n", Server.FILES_DIR, path);

@@ -1,15 +1,14 @@
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
 
 /**
  * Created by marek on 21.5.16.
  */
-public class PutHandler implements HttpHandler {
+public class PutHandler extends AbstractHttpHandler {
 
     @Override
-    public void handle(HttpExchange t) throws IOException {
+    public void handle(HttpExchange t) {
 
 
         try {
@@ -49,12 +48,7 @@ public class PutHandler implements HttpHandler {
             e.printStackTrace();
         }
 
-
-        String response = "Got the file you sent me, thank you!";
-        t.sendResponseHeaders(200, response.length());
-        OutputStream os = t.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
+        sendResponseAndClose(200, "Got the file you sent me, thank you!", t);
     }
 
 }
