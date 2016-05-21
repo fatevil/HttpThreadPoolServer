@@ -1,0 +1,3 @@
+Http server with thread pool. Implements GET, PUT, DELETE methods.
+
+
