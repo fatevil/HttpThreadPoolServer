@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class DeleteHandler implements HttpHandler {
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
+    public void handle(HttpExchange t) throws IOException {
 
     }
 }

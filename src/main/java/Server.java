@@ -2,8 +2,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,10 +54,32 @@ public class Server implements Runnable {
                     );
 
 
+            createDirIfNotExists("files");
             server.setExecutor(threadPoolExecutor); // creates a default executor
             server.start();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    public void createDirIfNotExists(String directoryName) {
+        File theDir = new File("new folder");
+
+        // if the directory does not exist, create it
+        if (!theDir.exists()) {
+            System.out.println("creating directory: " + directoryName);
+            boolean result = false;
+
+            try {
+                theDir.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
         }
 
     }
@@ -68,21 +90,14 @@ public class Server implements Runnable {
             switch (t.getRequestMethod()) {
                 case "GET":
                     new GetHandler().handle(t);
-                    break;
+                    return;
                 case "DELETE":
                     new DeleteHandler().handle(t);
-                    break;
+                    return;
                 case "PUT":
                     new PutHandler().handle(t);
-                    break;
+                    return;
             }
-
-            String response = "";
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
         }
     }
-
 }

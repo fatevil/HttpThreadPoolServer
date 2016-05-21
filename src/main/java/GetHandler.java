@@ -7,11 +7,12 @@ import java.io.IOException;
  * Created by marek on 21.5.16.
  */
 public class GetHandler implements HttpHandler {
-    public GetHandler() {
-    }
+
+    static final String dir = "C:/temp";
+
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
+    public void handle(HttpExchange t) throws IOException {
 
     }
 }
