@@ -19,7 +19,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
         String uri = t.getRequestURI().toString();
         String filename = String.format("%s%s", Server.FILES_DIR, uri.substring(0, uri.lastIndexOf("/")).concat("/.htaccess"));
         if (!FileCacheService.getInstance().fileExists(filename)) {
-            return false;
+            return true;
         }
 
         Headers var2 = t.getRequestHeaders();

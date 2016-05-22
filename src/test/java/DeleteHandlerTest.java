@@ -19,24 +19,24 @@ public class DeleteHandlerTest {
     private static Server server;
 
     @BeforeClass
-    public static void setUp() throws IOException {
-        File file = new File("files/test_file_to_be_deleted.txt");
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
+    public static void setUpClass() throws IOException {
         server = new Server();
         Thread t = new Thread(server);
         server.run();
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDownClass() {
         server.terminate();
     }
 
     @Test
     public void testHandle() throws Exception {
+        File file = new File("files/test_file_to_be_deleted.txt");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
         URL obj = new URL(url);
@@ -65,7 +65,30 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void testHandleNonExistingFile() {
+    public void testHandleNonExistingFile() throws IOException {
+        String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // optional default is GET
+        con.setRequestMethod("DELETE");
+        con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
+
+        int responseCode = con.getResponseCode();
+        System.out.println("\nSending 'DELETE' request to URL : " + url);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getErrorStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+            response.append("\n");
+        }
+        in.close();
+
+        assertTrue(responseCode == 404);
     }
 }
