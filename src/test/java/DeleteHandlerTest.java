@@ -1,5 +1,3 @@
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -15,27 +13,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by marek on 22.5.16.
  */
-public class DeleteHandlerTest {
-    private static Server server;
+public class DeleteHandlerTest extends AbstractTest {
 
-    @BeforeClass
-    public static void setUpClass() throws IOException {
-        server = new Server();
-        Thread t = new Thread(server);
-        server.run();
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        server.terminate();
-    }
 
     @Test
     public void testHandle() throws Exception {
-        File file = new File("files/test_file_to_be_deleted.txt");
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+        createTestingFile("test_file_to_be_deleted.txt");
 
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
