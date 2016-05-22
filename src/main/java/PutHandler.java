@@ -1,4 +1,5 @@
 import com.sun.net.httpserver.HttpExchange;
+import utils.RestrictedAccessException;
 
 import java.io.*;
 
@@ -9,8 +10,17 @@ public class PutHandler extends AbstractHttpHandler {
 
     @Override
     public void handle(HttpExchange t) {
-
-
+        System.out.println(t.getRequestURI().toString());
+        try {
+            FileCacheService.getInstance().checkPermission(t);
+            System.out.println("NO SHyvyvyvIT");
+        } catch (RestrictedAccessException e) {
+            System.out.println("Access restricted!");
+            sendResponseAndClose(403, "Access resricted!", t);
+            System.out.println("NO SHrwqraIT");
+            return;
+        }
+        System.out.println("NO SHasdIT");
         try {
             int i;
             InputStream input;
@@ -21,17 +31,7 @@ public class PutHandler extends AbstractHttpHandler {
                     new BufferedReader(
                             new InputStreamReader(in));
 
-            String contentDisposition = t.getRequestHeaders().getFirst("Content-Disposition");
-            int fileNamePosition = contentDisposition.lastIndexOf("filename");
-
-            String fullFileName;
-            if (fileNamePosition != 0) {
-                String filename = contentDisposition.substring(fileNamePosition + 9);
-                fullFileName = String.format("%s/%s", Server.FILES_DIR, filename);
-            } else {
-                fullFileName = String.format("%s/%s", Server.FILES_DIR, t.getRequestURI().toString());
-            }
-
+            String fullFileName = String.format("%s%s", Server.FILES_DIR, t.getRequestURI().toString());
             File outputFile =
                     FileCacheService.getInstance().createFile(fullFileName);
 
@@ -49,9 +49,10 @@ public class PutHandler extends AbstractHttpHandler {
 
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("NO 123SHIT");
             sendResponseAndClose(300, "Serverside error, sorry!", t);
         }
-
+        System.out.println("NO 456543SHIT");
         sendResponseAndClose(200, "Got the file you sent me, thank you!", t);
     }
 

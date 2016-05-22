@@ -24,8 +24,6 @@ import java.util.concurrent.TimeUnit;
  * <b>To ADD file</b><p>
  * Carry out <b>PUT</b> request with attachement "bobek.c":<p>
  * http://localhost:8000/bobek.c<p>
- * You can also use following if you add header "Content-Type : attachement; filename=bobek.c" to you request:<p>
- * http://localhost:8000/<p>
  * <p>
  * <b>To GET static content</b><p>
  * Carry out <b>GET</b> request:<p>

@@ -76,8 +76,8 @@ public class FileCacheService {
         return false;
     }
 
-    public boolean checkPermission(HttpExchange var1) throws RestrictedAccessException {
-        Headers var2 = var1.getRequestHeaders();
+    public boolean checkPermission(HttpExchange t) throws RestrictedAccessException {
+        Headers var2 = t.getRequestHeaders();
         String var3 = var2.getFirst("Authorization");
         if (var3 == null) {
             throw new RestrictedAccessException("Authorization header is missing!");
@@ -90,7 +90,7 @@ public class FileCacheService {
                 String var8 = var6.substring(0, var7); //username
                 String var9 = var6.substring(var7 + 1);   //password
 
-                String uri = var1.getRequestURI().toString();
+                String uri = t.getRequestURI().toString();
                 try {
                     if (Files.readAllLines(Paths.get(uri.substring(0, uri.lastIndexOf("/")).concat(".htaccess"))).stream().anyMatch(s -> {
                         int index = s.indexOf(":");
