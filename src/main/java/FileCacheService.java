@@ -20,7 +20,10 @@ public class FileCacheService {
     }
 
     public File getFile(String fullFileName) {
-        File file = cache.get(fullFileName).get();
+        File file = null;
+        if (cache.containsKey(fullFileName)) {
+            file = cache.get(fullFileName).get();
+        }
         if (file != null) {
             return file;
         } else {
@@ -52,8 +55,10 @@ public class FileCacheService {
 
     public boolean fileExists(String fullFileName) {
         if (cache.containsKey(fullFileName) || new File(fullFileName).exists()) {
+            System.out.printf("Heya! File %s has been found!%n", fullFileName);
             return true;
         }
+        System.out.printf("Unfortunately file %s has not been found!%n", fullFileName);
         return false;
     }
 }
