@@ -54,11 +54,17 @@ public class FileCacheService {
     }
 
     public boolean fileExists(String fullFileName) {
-        if (cache.containsKey(fullFileName) || new File(fullFileName).exists()) {
+        if (cache.containsKey(fullFileName)) {
             System.out.printf("Heya! File %s has been found!%n", fullFileName);
             return true;
+        } else {
+            File f = new File(fullFileName);
+            if (f.exists() && !f.isDirectory()) {
+                System.out.printf("Heya! File %s has been found!%n", fullFileName);
+                return true;
+            }
         }
-        System.out.printf("Unfortunately file %s has not been found!%n", fullFileName);
+        System.out.printf("Unfortunately file %s has not been found or it is a directory!%n", fullFileName);
         return false;
     }
 }

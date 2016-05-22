@@ -3,13 +3,18 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static utils.HashGenerator.createHash;
+import static utils.Util.createDirIfNotExists;
+
 
 /**
  * Server listening on localhost. Responses to GET, PUT, DELETE methods. Uses basic authentification and ThreadPool executor.
@@ -31,8 +36,9 @@ import java.util.concurrent.TimeUnit;
  * http://localhost:8000/index.html<p>
  * <p>
  * <b>To GET file</b><p>
- * Carry out <b>GET</b> request:<p>
+ * Carry out <b>GET</b> following request with header Accept : application/x-www-form-urlencoded<p>
  * http://localhost:8000/bobek.c<p>
+ *
  * <p>
  * Created by marek on 21.5.16.
  */
@@ -46,6 +52,18 @@ public class Server implements Runnable {
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;
+
+    private final Map<String, String> adminLoginMap = new HashMap<String, String>() {
+        {
+            put("admin", createHash("adminpassword"));
+        }
+    };
+
+    private final Map<String, String> userLoginMap = new HashMap<String, String>() {
+        {
+            put("user", createHash("password"));
+        }
+    };
 
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
         this.corePoolSize = corePoolSize;
@@ -71,8 +89,7 @@ public class Server implements Runnable {
             server = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
 
             HttpContext cc = server.createContext("/", new RequestHandler());
-            cc.setAuthenticator(new Authentificator());
-
+            cc.setAuthenticator(new CustomAuthentificator(adminLoginMap, userLoginMap));
 
             ExecutorService threadPoolExecutor =
                     new ThreadPoolExecutor(
@@ -94,26 +111,6 @@ public class Server implements Runnable {
 
     }
 
-    public void createDirIfNotExists(String directoryName) {
-        File theDir = new File(directoryName);
-
-        // if the directory does not exist, create it
-        if (!theDir.exists()) {
-            System.out.println("creating directory: " + directoryName);
-            boolean result = false;
-
-            try {
-                theDir.mkdir();
-                result = true;
-            } catch (SecurityException se) {
-                //handle it
-            }
-            if (result) {
-                System.out.println("DIR created");
-            }
-        }
-
-    }
 
     static class RequestHandler implements HttpHandler {
         @Override

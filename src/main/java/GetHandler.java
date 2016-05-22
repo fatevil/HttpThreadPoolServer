@@ -27,13 +27,13 @@ public class GetHandler extends AbstractHttpHandler {
         System.out.println("Gonna give file!");
         String filename = t.getRequestURI().toString();
         String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
-        File outputFile = FileCacheService.getInstance().getFile(fullFileName);
 
         if (!FileCacheService.getInstance().fileExists(fullFileName)) {
             sendResponseAndClose(404, "File doesn't exist!", t);
             return;
         }
 
+        File outputFile = FileCacheService.getInstance().getFile(fullFileName);
 
         // add the required response header for a PDF file
         Headers h = t.getResponseHeaders();
