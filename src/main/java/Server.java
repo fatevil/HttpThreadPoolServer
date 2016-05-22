@@ -1,4 +1,7 @@
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +38,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class Server implements Runnable {
 
+    static final int SERVER_PORT = 8000;
+
     static final String FILES_DIR = "files";
     static final String CONTENT_DIR = "web_content";
-
-    private final String USER_NAME = "user";
-    private final String USER_PASSWORD = "password";
 
     private final int corePoolSize;
     private final int maxPoolSize;
@@ -66,15 +68,10 @@ public class Server implements Runnable {
     public void run() {
         HttpServer server = null;
         try {
-            server = HttpServer.create(new InetSocketAddress(8000), 0);
+            server = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
 
             HttpContext cc = server.createContext("/", new RequestHandler());
-            cc.setAuthenticator(new BasicAuthenticator("test") {
-                @Override
-                public boolean checkCredentials(String user, String pwd) {
-                    return user.equals(USER_NAME) && pwd.equals(USER_PASSWORD);
-                }
-            });
+            cc.setAuthenticator(new Authentificator());
 
 
             ExecutorService threadPoolExecutor =
