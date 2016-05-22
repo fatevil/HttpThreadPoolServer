@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Server implements Runnable {
 
     static final String FILES_DIR = "files";
-    static final String CONTENT_DIR = "web_conent";
+    static final String CONTENT_DIR = "web_content";
 
     private final String USER_NAME = "user";
     private final String USER_PASSWORD = "password";
