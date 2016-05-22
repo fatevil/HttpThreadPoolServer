@@ -16,7 +16,7 @@ public class DeleteHandler extends AbstractHttpHandler {
         if (delete(t.getRequestURI().toString())) {
             sendResponseAndClose(200, "Deleted!", t);
         } else {
-            sendResponseAndClose(300, "It didn't work out! I'm sorry :(.", t);
+            sendResponseAndClose(300, "Serverside error, sorry!", t);
         }
     }
 

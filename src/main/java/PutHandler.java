@@ -49,6 +49,7 @@ public class PutHandler extends AbstractHttpHandler {
 
         } catch (IOException e) {
             e.printStackTrace();
+            sendResponseAndClose(300, "Serverside error, sorry!", t);
         }
 
         sendResponseAndClose(200, "Got the file you sent me, thank you!", t);

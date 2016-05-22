@@ -29,8 +29,10 @@ public class GetHandler extends AbstractHttpHandler {
         String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
         File outputFile = FileCacheService.getInstance().getFile(fullFileName);
 
-        if (!FileCacheService.getInstance().fileExists(fullFileName))
+        if (!FileCacheService.getInstance().fileExists(fullFileName)) {
             sendResponseAndClose(404, "File doesn't exist!", t);
+            return;
+        }
 
 
         // add the required response header for a PDF file
@@ -46,6 +48,8 @@ public class GetHandler extends AbstractHttpHandler {
             bis.read(bytearray, 0, bytearray.length);
         } catch (Exception e) {
             e.printStackTrace();
+            sendResponseAndClose(300, "Serverside error, sorry!", t);
+            return;
         }
 
         sendDataAndClose(200, bytearray, outputFile.length(), t);
@@ -59,8 +63,10 @@ public class GetHandler extends AbstractHttpHandler {
         }
         String fullFileName = String.format("%s%s", Server.CONTENT_DIR, filename);
 
-        if (!FileCacheService.getInstance().fileExists(fullFileName))
+        if (!FileCacheService.getInstance().fileExists(fullFileName)) {
             sendResponseAndClose(404, "File doesn't exist!", t);
+            return;
+        }
 
         File outputFile = FileCacheService.getInstance().getFile(fullFileName);
         String response = null;
@@ -68,6 +74,8 @@ public class GetHandler extends AbstractHttpHandler {
             response = FileUtils.readFileToString(outputFile);
         } catch (IOException e) {
             e.printStackTrace();
+            sendResponseAndClose(300, "Serverside error, sorry!", t);
+            return;
         }
         sendResponseAndClose(200, response, t);
     }
