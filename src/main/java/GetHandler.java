@@ -57,7 +57,7 @@ public class GetHandler extends AbstractHttpHandler {
             sendResponseAndClose(403, "Access resricted!", t);
         } catch (Exception e) {
             e.printStackTrace();
-            sendResponseAndClose(300, "Serverside error, sorry!", t);
+            sendResponseAndClose(500, "Serverside error, sorry!", t);
         }
     }
 
@@ -80,7 +80,7 @@ public class GetHandler extends AbstractHttpHandler {
             response = FileUtils.readFileToString(outputFile);
         } catch (IOException e) {
             e.printStackTrace();
-            sendResponseAndClose(300, "Serverside error, sorry!", t);
+            sendResponseAndClose(500, "Serverside error, sorry!", t);
             return;
         }
         sendResponseAndClose(200, response, t);

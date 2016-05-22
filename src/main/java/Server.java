@@ -1,4 +1,3 @@
-import com.sun.istack.internal.logging.Logger;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -43,7 +42,7 @@ public class Server implements Runnable {
     static final int SERVER_PORT = 8000;
     static final String FILES_DIR = "files";
     static final String CONTENT_DIR = "web_content";
-    private static final Logger logger = Logger.getLogger(Server.class);
+    //    private static final Logger logger = Logger.getLogger(Server.class);
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;
@@ -70,11 +69,10 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        HttpServer server = null;
         try {
-            server = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
+            httpServer = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
 
-            HttpContext cc = server.createContext("/", new RequestHandler());
+            HttpContext cc = httpServer.createContext("/", new RequestHandler());
             cc.setAuthenticator(null);
 
             ExecutorService threadPoolExecutor =
@@ -92,8 +90,8 @@ public class Server implements Runnable {
             Util.createDirIfNotExists(CONTENT_DIR);
             Util.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
 
-            server.setExecutor(threadPoolExecutor); // creates a default executor
-            server.start();
+            httpServer.setExecutor(threadPoolExecutor); // creates a default executor
+            httpServer.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,7 +99,7 @@ public class Server implements Runnable {
     }
 
     public void terminate() {
-        httpServer.stop(1000);
+        httpServer.stop(1);
     }
 
 

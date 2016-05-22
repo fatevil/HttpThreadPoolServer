@@ -22,6 +22,7 @@ public class DeleteHandler extends AbstractHttpHandler {
             FileCacheService.getInstance().removeFile(fullFileName);
             System.out.printf("Succesfully deleted %s%n", fullFileName);
             sendResponseAndClose(200, "Deleted!", t);
+            return;
         } catch (NoSuchFileException x) {
             System.err.format(String.format("%%s: no such file or directory%%n"), filename);
         } catch (IOException x) {
@@ -32,7 +33,7 @@ public class DeleteHandler extends AbstractHttpHandler {
             return;
         }
 
-        sendResponseAndClose(300, "Serverside error, sorry!", t);
+        sendResponseAndClose(500, "Serverside error, sorry!", t);
     }
 
 }

@@ -16,6 +16,12 @@ import java.util.Base64;
 public abstract class AbstractHttpHandler implements HttpHandler {
 
     public static boolean checkPermission(HttpExchange t) throws RestrictedAccessException {
+        String uri = t.getRequestURI().toString();
+        String filename = String.format("%s%s", Server.FILES_DIR, uri.substring(0, uri.lastIndexOf("/")).concat("/.htaccess"));
+        if (!FileCacheService.getInstance().fileExists(filename)) {
+            return false;
+        }
+
         Headers var2 = t.getRequestHeaders();
         String var3 = var2.getFirst("Authorization");
         if (var3 == null) {
@@ -30,9 +36,9 @@ public abstract class AbstractHttpHandler implements HttpHandler {
                 String var8 = var6.substring(0, var7); //username
                 String var9 = var6.substring(var7 + 1);   //password
 
-                String uri = t.getRequestURI().toString();
+
                 try {
-                    if (Files.readAllLines(Paths.get(String.format("%s%s", Server.FILES_DIR, uri.substring(0, uri.lastIndexOf("/")).concat("/.htaccess")))).stream().anyMatch(s -> {
+                    if (Files.readAllLines(Paths.get(filename)).stream().anyMatch(s -> {
                         int index = s.indexOf(":");
 
                         String[] array = {s.substring(0, index), s.substring(index + 1)};

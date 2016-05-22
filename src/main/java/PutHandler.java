@@ -39,15 +39,15 @@ public class PutHandler extends AbstractHttpHandler {
             in.close();
 
             System.out.printf("We recieved file \"%s\"!%n", fullFileName);
-            sendResponseAndClose(200, "Got the file you sent me, thank you!", t);
+            sendResponseAndClose(202, "Got the file you sent me, thank you!", t);
             return;
         } catch (IOException e) {
             e.printStackTrace();
-            sendResponseAndClose(300, "Serverside error, sorry!", t);
+            sendResponseAndClose(500, "Serverside error, sorry!", t);
             return;
         } catch (RestrictedAccessException e) {
             System.out.println(e.getMessage());
-            sendResponseAndClose(403, "Access resricted!", t);
+            sendResponseAndClose(401, "Access resricted!", t);
             return;
         }
     }
