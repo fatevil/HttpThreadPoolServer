@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import org.apache.commons.io.FileUtils;
+import utils.RestrictedAccessException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -24,35 +25,40 @@ public class GetHandler extends AbstractHttpHandler {
     }
 
     private void giveFileReponse(HttpExchange t) {
-        System.out.println("Gonna give file!");
-        String filename = t.getRequestURI().toString();
-        String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
-
-        if (!FileCacheService.getInstance().fileExists(fullFileName)) {
-            sendResponseAndClose(404, "File doesn't exist!", t);
-            return;
-        }
-
-        File outputFile = FileCacheService.getInstance().getFile(fullFileName);
-
-        // add the required response header for a PDF file
-        Headers h = t.getResponseHeaders();
-        h.add("Content-Type", "application/x-www-form-urlencoded");
-
-        byte[] bytearray = new byte[(int) outputFile.length()];
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
         try {
+            System.out.println("Gonna give file!");
+            checkPermission(t);
+
+            String filename = t.getRequestURI().toString();
+            String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
+
+            if (!FileCacheService.getInstance().fileExists(fullFileName)) {
+                sendResponseAndClose(404, "File doesn't exist!", t);
+                return;
+            }
+
+            File outputFile = FileCacheService.getInstance().getFile(fullFileName);
+
+            // add the required response header for a PDF file
+            Headers h = t.getResponseHeaders();
+            h.add("Content-Type", "application/x-www-form-urlencoded");
+
+            byte[] bytearray = new byte[(int) outputFile.length()];
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+
             fis = new FileInputStream(outputFile);
             bis = new BufferedInputStream(fis);
             bis.read(bytearray, 0, bytearray.length);
+
+            sendDataAndClose(200, bytearray, outputFile.length(), t);
+        } catch (RestrictedAccessException e) {
+            System.out.println("Access restricted!");
+            sendResponseAndClose(403, "Access resricted!", t);
         } catch (Exception e) {
             e.printStackTrace();
             sendResponseAndClose(300, "Serverside error, sorry!", t);
-            return;
         }
-
-        sendDataAndClose(200, bytearray, outputFile.length(), t);
     }
 
     private void giveTextReponse(HttpExchange t) {
