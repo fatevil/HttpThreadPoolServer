@@ -20,15 +20,17 @@ public class DeleteHandler extends AbstractHttpHandler {
         }
     }
 
-    private boolean delete(String path) {
+    private boolean delete(String filename) {
         try {
-            Files.delete(Paths.get(String.format("%s%s", Server.FILES_DIR, path)));
-            System.out.printf("Succesfully deleted %s%s%n", Server.FILES_DIR, path);
+            String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
+            Files.delete(Paths.get(fullFileName));
+            FileCacheService.getInstance().removeFile(fullFileName);
+            System.out.printf("Succesfully deleted %s%n", fullFileName);
             return true;
         } catch (NoSuchFileException x) {
-            System.err.format(String.format("%%s: no such file or directory%%n"), path);
+            System.err.format(String.format("%%s: no such file or directory%%n"), filename);
         } catch (DirectoryNotEmptyException x) {
-            System.err.format("%s not empty%n", path);
+            System.err.format("%s not empty%n", filename);
         } catch (IOException x) {
             // File permission problems are caught here.
             System.err.println(x);

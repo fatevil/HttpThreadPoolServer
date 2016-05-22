@@ -25,12 +25,10 @@ public class PutHandler extends AbstractHttpHandler {
             int fileNamePosition = contentDisposition.lastIndexOf("filename");
             String filename = contentDisposition.substring(fileNamePosition + 9);
 
-            File outputFile =
-                    new File(Server.FILES_DIR, filename);
+            String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
 
-            if (!outputFile.isFile() && !outputFile.createNewFile()) {
-                throw new IOException("Error creating new file: " + outputFile.getAbsolutePath());
-            }
+            File outputFile =
+                    FileCacheService.getInstance().createFile(fullFileName);
 
             FileWriter out =
                     new FileWriter(outputFile);

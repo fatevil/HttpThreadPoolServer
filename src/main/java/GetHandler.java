@@ -25,9 +25,10 @@ public class GetHandler extends AbstractHttpHandler {
 
     private void giveFileReponse(HttpExchange t) {
         String filename = t.getRequestURI().toString();
-        File outputFile = new File(Server.FILES_DIR, filename);
+        String fullFileName = String.format("%s%s", Server.FILES_DIR, filename);
+        File outputFile = FileCacheService.getInstance().getFile(fullFileName);
 
-        if (!outputFile.exists())
+        if (!FileCacheService.getInstance().fileExists(fullFileName))
             sendResponseAndClose(404, "File doesn't exist!", t);
 
 
@@ -54,10 +55,13 @@ public class GetHandler extends AbstractHttpHandler {
         if (filename.equals("/")) {
             filename = "/index.html";
         }
-        File outputFile = new File(Server.CONTENT_DIR, filename);
+        String fullFileName = String.format("%s%s", Server.CONTENT_DIR, filename);
 
-        if (!outputFile.exists())
+        if (FileCacheService.getInstance().fileExists(fullFileName))
             sendResponseAndClose(404, "File doesn't exist!", t);
+
+        File outputFile = FileCacheService.getInstance().getFile(fullFileName);
+
 
         String response = null;
         try {
