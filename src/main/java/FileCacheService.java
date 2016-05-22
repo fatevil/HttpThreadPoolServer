@@ -8,9 +8,9 @@ import java.util.Map;
  * Created by marek on 22.5.16.
  */
 public class FileCacheService {
-    private static FileCacheService ourInstance = new FileCacheService();
+    private static final FileCacheService ourInstance = new FileCacheService();
 
-    public Map<String, SoftReference<File>> cache = new HashMap<>();
+    public final Map<String, SoftReference<File>> cache = new HashMap<>();
 
     private FileCacheService() {
     }

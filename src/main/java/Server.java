@@ -46,8 +46,7 @@ public class Server implements Runnable {
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;
-    private volatile boolean running = true;
-
+    
     private HttpServer httpServer;
 
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
@@ -117,7 +116,6 @@ public class Server implements Runnable {
                     return;
                 case "PUT":
                     new PutHandler().handle(t);
-                    return;
             }
         }
     }

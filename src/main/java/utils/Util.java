@@ -22,10 +22,13 @@ public class Util {
             boolean result = false;
 
             try {
-                theDir.mkdir();
-                result = true;
+
+                if (theDir.mkdir()) {
+                    result = true;
+                }
             } catch (SecurityException se) {
                 //handle it
+                se.printStackTrace();
             }
             if (result) {
                 System.out.println("DIR created");

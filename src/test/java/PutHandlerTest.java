@@ -30,9 +30,7 @@ public class PutHandlerTest extends AbstractTest {
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
         con.setDoOutput(true);
 
-        byte[] encoded = Files.readAllBytes(Paths.get(String.format(String.format("%s/tested_file.txt", Server.FILES_DIR))));
-        String r = new String(encoded);
-
+        byte[] encoded = Files.readAllBytes(Paths.get(String.format("%s/tested_file.txt", Server.FILES_DIR)));
         con.getOutputStream().write(encoded);
 
 
@@ -67,9 +65,7 @@ public class PutHandlerTest extends AbstractTest {
         con.setRequestMethod("PUT");
         con.setDoOutput(true);
 
-        byte[] encoded = Files.readAllBytes(Paths.get(String.format(String.format("%s/tested_file.txt", Server.FILES_DIR))));
-        String r = new String(encoded);
-
+        byte[] encoded = Files.readAllBytes(Paths.get(String.format("%s/tested_file.txt", Server.FILES_DIR)));
         con.getOutputStream().write(encoded);
 
 

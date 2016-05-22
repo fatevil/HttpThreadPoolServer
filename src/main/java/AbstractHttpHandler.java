@@ -15,11 +15,11 @@ import java.util.Base64;
  */
 public abstract class AbstractHttpHandler implements HttpHandler {
 
-    public static boolean checkPermission(HttpExchange t) throws RestrictedAccessException {
+    public static void checkPermission(HttpExchange t) throws RestrictedAccessException {
         String uri = t.getRequestURI().toString();
         String filename = String.format("%s%s", Server.FILES_DIR, uri.substring(0, uri.lastIndexOf("/")).concat("/.htaccess"));
         if (!FileCacheService.getInstance().fileExists(filename)) {
-            return true;
+            return;
         }
 
         Headers var2 = t.getRequestHeaders();
@@ -29,33 +29,28 @@ public abstract class AbstractHttpHandler implements HttpHandler {
         } else {
             int var4 = var3.indexOf(32);
             if (var4 != -1 && var3.substring(0, var4).equals("Basic")) {
-
-                byte[] var5 = Base64.getDecoder().decode(var3.substring(var4 + 1));
-                String var6 = new String(var5);
-                int var7 = var6.indexOf(58);
-                String var8 = var6.substring(0, var7); //username
-                String var9 = var6.substring(var7 + 1);   //password
-
-
                 try {
+                    byte[] var5 = Base64.getDecoder().decode(var3.substring(var4 + 1));
+                    String var6 = new String(var5);
+                    int var7 = var6.indexOf(58);
+                    String var8 = var6.substring(0, var7); //username
+                    String var9 = var6.substring(var7 + 1);   //password
+
+
                     if (Files.readAllLines(Paths.get(filename)).stream().anyMatch(s -> {
                         int index = s.indexOf(":");
 
                         String[] array = {s.substring(0, index), s.substring(index + 1)};
 
-                        if (var8.equals(array[0]) && HashGenerator.createHash(var9).equals(array[1])) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return var8.equals(array[0]) && HashGenerator.createHash(var9).equals(array[1]);
                     })) {
-                        return true;
+                        return;
                     } else {
                         throw new RestrictedAccessException("This user is not permitted to access this folder!");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return true;
+                    return;
                 }
             }
             throw new RestrictedAccessException("Wrong encoding!");

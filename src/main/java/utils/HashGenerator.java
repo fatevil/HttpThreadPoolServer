@@ -10,7 +10,7 @@ public class HashGenerator {
 
     public static String createHash(String s) {
         String password = "123456";
-
+        StringBuilder sb;
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");
@@ -18,7 +18,8 @@ public class HashGenerator {
             byte byteData[] = md.digest();
 
             //convert the byte to hex format method 1
-            StringBuilder sb = new StringBuilder();
+
+            sb = new StringBuilder();
             for (byte aByteData1 : byteData) {
                 sb.append(Integer.toString((aByteData1 & 0xff) + 0x100, 16).substring(1));
             }

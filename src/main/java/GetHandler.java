@@ -44,12 +44,13 @@ public class GetHandler extends AbstractHttpHandler {
             h.add("Content-Type", "application/x-www-form-urlencoded");
 
             byte[] bytearray = new byte[(int) outputFile.length()];
-            FileInputStream fis = null;
-            BufferedInputStream bis = null;
 
-            fis = new FileInputStream(outputFile);
-            bis = new BufferedInputStream(fis);
-            bis.read(bytearray, 0, bytearray.length);
+
+            try (FileInputStream fis = new FileInputStream(outputFile);
+                 BufferedInputStream bis = new BufferedInputStream(fis)) {
+                bis.read(bytearray, 0, bytearray.length);
+            }
+
 
             sendDataAndClose(200, bytearray, outputFile.length(), t);
         } catch (RestrictedAccessException e) {

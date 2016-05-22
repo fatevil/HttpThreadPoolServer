@@ -18,37 +18,28 @@ public class PutHandler extends AbstractHttpHandler {
             input = t.getRequestBody();
             BufferedInputStream in =
                     new BufferedInputStream(input);
-            BufferedReader reader =
-                    new BufferedReader(
-                            new InputStreamReader(in));
 
             String fullFileName = String.format("%s%s", Server.FILES_DIR, t.getRequestURI().toString());
 
-            System.out.println(fullFileName);
             File outputFile =
                     FileCacheService.getInstance().createFile(fullFileName);
 
-            FileWriter out =
-                    new FileWriter(outputFile);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(in)); FileWriter out = new FileWriter(outputFile)) {
 
-            while ((i = reader.read()) != -1) {
-                out.write(i);
+
+                while ((i = reader.read()) != -1) {
+                    out.write(i);
+                }
+                System.out.printf("We recieved file \"%s\"!%n", fullFileName);
             }
 
-            out.close();
-            in.close();
-
-            System.out.printf("We recieved file \"%s\"!%n", fullFileName);
             sendResponseAndClose(202, "Got the file you sent me, thank you!", t);
-            return;
         } catch (IOException e) {
             e.printStackTrace();
             sendResponseAndClose(500, "Serverside error, sorry!", t);
-            return;
         } catch (RestrictedAccessException e) {
             System.out.println(e.getMessage());
             sendResponseAndClose(403, "Access resricted!", t);
-            return;
         }
     }
 
