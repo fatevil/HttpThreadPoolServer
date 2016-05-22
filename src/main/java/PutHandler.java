@@ -23,10 +23,10 @@ public class PutHandler extends AbstractHttpHandler {
 
             String contentDisposition = t.getRequestHeaders().getFirst("Content-Disposition");
             int fileNamePosition = contentDisposition.lastIndexOf("filename");
-            String filename = contentDisposition.substring(fileNamePosition + 9);
 
             String fullFileName;
-            if(filename.isEmpty()) {
+            if (fileNamePosition == 0) {
+                String filename = contentDisposition.substring(fileNamePosition + 9);
                 fullFileName = String.format("%s/%s", Server.FILES_DIR, filename);
             } else {
                 fullFileName = String.format("%s/%s", Server.FILES_DIR, t.getRequestURI().toString());
@@ -45,7 +45,7 @@ public class PutHandler extends AbstractHttpHandler {
             out.close();
             in.close();
 
-            System.out.printf("We recieved file \"%s\"!%n", filename);
+            System.out.printf("We recieved file \"%s\"!%n", fullFileName);
 
         } catch (IOException e) {
             e.printStackTrace();
