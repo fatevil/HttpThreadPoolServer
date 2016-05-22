@@ -2,6 +2,8 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import utils.HashGenerator;
+import utils.Util;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,9 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static utils.HashGenerator.createHash;
-import static utils.Util.createDirIfNotExists;
 
 
 /**
@@ -38,7 +37,7 @@ import static utils.Util.createDirIfNotExists;
  * <b>To GET file</b><p>
  * Carry out <b>GET</b> following request with header Accept : application/x-www-form-urlencoded<p>
  * http://localhost:8000/bobek.c<p>
- *
+ * <p>
  * <p>
  * Created by marek on 21.5.16.
  */
@@ -55,13 +54,13 @@ public class Server implements Runnable {
 
     private final Map<String, String> adminLoginMap = new HashMap<String, String>() {
         {
-            put("admin", createHash("adminpassword"));
+            put("admin", HashGenerator.createHash("adminpassword"));
         }
     };
 
     private final Map<String, String> userLoginMap = new HashMap<String, String>() {
         {
-            put("user", createHash("password"));
+            put("user", HashGenerator.createHash("password"));
         }
     };
 
@@ -101,8 +100,11 @@ public class Server implements Runnable {
                     );
 
 
-            createDirIfNotExists(FILES_DIR);
-            createDirIfNotExists(CONTENT_DIR);
+            Util.createDirIfNotExists(FILES_DIR);
+            Util.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
+            Util.createDirIfNotExists(CONTENT_DIR);
+            Util.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
+
             server.setExecutor(threadPoolExecutor); // creates a default executor
             server.start();
         } catch (IOException e) {
