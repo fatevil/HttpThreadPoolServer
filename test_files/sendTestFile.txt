@@ -1,1 +1,0 @@
-Hello, this is a test file to be sent to our server!
