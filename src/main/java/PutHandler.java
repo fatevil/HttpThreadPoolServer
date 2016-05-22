@@ -25,7 +25,7 @@ public class PutHandler extends AbstractHttpHandler {
             int fileNamePosition = contentDisposition.lastIndexOf("filename");
 
             String fullFileName;
-            if (fileNamePosition == 0) {
+            if (fileNamePosition != 0) {
                 String filename = contentDisposition.substring(fileNamePosition + 9);
                 fullFileName = String.format("%s/%s", Server.FILES_DIR, filename);
             } else {
