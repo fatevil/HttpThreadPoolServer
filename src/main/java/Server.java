@@ -1,3 +1,4 @@
+import com.sun.istack.internal.logging.Logger;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -38,14 +39,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class Server implements Runnable {
 
-    static final int SERVER_PORT = 8000;
 
+    static final int SERVER_PORT = 8000;
     static final String FILES_DIR = "files";
     static final String CONTENT_DIR = "web_content";
-
+    private static final Logger logger = Logger.getLogger(Server.class);
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;
+    private volatile boolean running = true;
+
+    private HttpServer httpServer;
 
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
         this.corePoolSize = corePoolSize;
@@ -94,6 +98,10 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    public void terminate() {
+        httpServer.stop(1000);
     }
 
 
