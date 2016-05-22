@@ -25,7 +25,12 @@ public class PutHandler extends AbstractHttpHandler {
             int fileNamePosition = contentDisposition.lastIndexOf("filename");
             String filename = contentDisposition.substring(fileNamePosition + 9);
 
-            String fullFileName = String.format("%s/%s", Server.FILES_DIR, filename);
+            String fullFileName;
+            if(filename.isEmpty()) {
+                fullFileName = String.format("%s/%s", Server.FILES_DIR, filename);
+            } else {
+                fullFileName = String.format("%s/%s", Server.FILES_DIR, t.getRequestURI().toString());
+            }
 
             File outputFile =
                     FileCacheService.getInstance().createFile(fullFileName);
