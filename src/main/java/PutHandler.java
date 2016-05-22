@@ -44,7 +44,7 @@ public class PutHandler extends AbstractHttpHandler {
             e.printStackTrace();
             sendResponseAndClose(300, "Serverside error, sorry!", t);
         } catch (RestrictedAccessException e) {
-            System.out.println("Access restricted!");
+            System.out.println(e.getMessage());
             sendResponseAndClose(403, "Access resricted!", t);
             return;
         }

@@ -27,7 +27,7 @@ public class DeleteHandler extends AbstractHttpHandler {
         } catch (IOException x) {
             System.err.println(x);
         } catch (RestrictedAccessException e) {
-            System.out.println("Access restricted!");
+            System.out.println(e.getMessage());
             sendResponseAndClose(403, "Access resricted!", t);
             return;
         }

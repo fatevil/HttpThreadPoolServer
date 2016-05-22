@@ -53,7 +53,7 @@ public class GetHandler extends AbstractHttpHandler {
 
             sendDataAndClose(200, bytearray, outputFile.length(), t);
         } catch (RestrictedAccessException e) {
-            System.out.println("Access restricted!");
+            System.out.println(e.getMessage());
             sendResponseAndClose(403, "Access resricted!", t);
         } catch (Exception e) {
             e.printStackTrace();
