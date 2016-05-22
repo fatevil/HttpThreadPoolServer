@@ -2,13 +2,10 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import utils.HashGenerator;
 import utils.Util;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,18 +49,6 @@ public class Server implements Runnable {
     private final int maxPoolSize;
     private final long keepAliveTime;
 
-    private final Map<String, String> adminLoginMap = new HashMap<String, String>() {
-        {
-            put("admin", HashGenerator.createHash("adminpassword"));
-        }
-    };
-
-    private final Map<String, String> userLoginMap = new HashMap<String, String>() {
-        {
-            put("user", HashGenerator.createHash("password"));
-        }
-    };
-
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
         this.corePoolSize = corePoolSize;
         this.maxPoolSize = maxPoolSize;
@@ -88,7 +73,7 @@ public class Server implements Runnable {
             server = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
 
             HttpContext cc = server.createContext("/", new RequestHandler());
-            cc.setAuthenticator(new CustomAuthentificator(adminLoginMap, userLoginMap));
+            cc.setAuthenticator(null);
 
             ExecutorService threadPoolExecutor =
                     new ThreadPoolExecutor(
