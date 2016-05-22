@@ -47,7 +47,7 @@ public class PutHandler extends AbstractHttpHandler {
             return;
         } catch (RestrictedAccessException e) {
             System.out.println(e.getMessage());
-            sendResponseAndClose(401, "Access resricted!", t);
+            sendResponseAndClose(403, "Access resricted!", t);
             return;
         }
     }
