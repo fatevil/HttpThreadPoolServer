@@ -4,6 +4,9 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import fel.cvut.cz.handling.DeleteHandler;
+import fel.cvut.cz.handling.GetHandler;
+import fel.cvut.cz.handling.PutHandler;
 import fel.cvut.cz.utils.CustomFileUtils;
 
 import java.io.IOException;

@@ -1,7 +1,8 @@
-package fel.cvut.cz;
+package fel.cvut.cz.handling;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import fel.cvut.cz.FileCacheService;
 import fel.cvut.cz.access.AccesHandler;
 import fel.cvut.cz.utils.HttpExchangeSerivce;
 
