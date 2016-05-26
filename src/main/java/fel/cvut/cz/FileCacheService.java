@@ -21,7 +21,7 @@ public class FileCacheService {
         return ourInstance;
     }
 
-    public File getFile(String fullFileName) {
+    public File get(String fullFileName) {
         File file = null;
         if (cache.containsKey(fullFileName)) {
             file = cache.get(fullFileName).get();
@@ -36,7 +36,7 @@ public class FileCacheService {
         }
     }
 
-    public void removeFile(String fullFileName) {
+    public void remove(String fullFileName) {
         cache.remove(fullFileName);
     }
 
@@ -55,19 +55,18 @@ public class FileCacheService {
         return null;
     }
 
-    public boolean fileExists(String fullFileName) {
+    public boolean exists(String fullFileName) {
         if (cache.containsKey(fullFileName)) {
-            System.out.printf("Heya! File %s has been found!%n", fullFileName);
+            System.out.printf("%s found!%n", fullFileName);
             return true;
         } else {
             File f = new File(fullFileName);
-            if (f.exists() && !f.isDirectory()) {
-                System.out.printf("Heya! File %s has been found!%n", fullFileName);
+            if (f.exists()) {
+                System.out.printf("%s found!%n", fullFileName);
                 return true;
             }
         }
-        System.out.printf("Unfortunately file %s has not been found or it is a directory!%n", fullFileName);
+        System.out.printf("%s not found!%n", fullFileName);
         return false;
     }
-
 }

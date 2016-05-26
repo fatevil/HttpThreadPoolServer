@@ -1,19 +1,16 @@
 package fel.cvut.cz.access;
 
 import fel.cvut.cz.utils.HashGenerator;
-
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Created by marek on 26.5.16.
  */
 public class Authorization {
 
-    private String username;
-
-    private String password; // hashed
-
     private final String base64;
+    private String username;
+    private String password; // hashed
 
     public Authorization(String base64) {
         this.password = null;
@@ -22,10 +19,12 @@ public class Authorization {
     }
 
     private void decodeBase64() {
-        String base = new String(Base64.getDecoder().decode(base64));
-        int splitIndex = base.indexOf(58);
-        this.username = base.substring(0, splitIndex); //username
-        this.password = HashGenerator.createHash(base.substring(splitIndex + 1));
+        // Decode data on other side, by processing encoded data
+        byte[] valueDecoded = Base64.decodeBase64((base64.substring(5)));
+        String decodedString = new String(valueDecoded);
+        int index = decodedString.indexOf(":");
+        this.username = decodedString.substring(0, index);
+        this.password = HashGenerator.createHash(decodedString.substring(index + 1));
     }
 
     public String getPassword() {
@@ -44,7 +43,9 @@ public class Authorization {
 
     public String getLineFormat() {
         if (username == null) {
+            System.out.println("decode");
             decodeBase64();
+            System.out.println("done");
         }
         return String.format("%s:%s", username, password);
     }

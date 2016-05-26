@@ -1,48 +1,29 @@
 package fel.cvut.cz;
 
 import com.sun.net.httpserver.HttpExchange;
-import fel.cvut.cz.utils.RestrictedAccessException;
+import com.sun.net.httpserver.HttpHandler;
+import fel.cvut.cz.access.AccesHandler;
+import fel.cvut.cz.utils.HttpExchangeSerivce;
 
-import java.io.*;
+import java.io.File;
 
 /**
  * Created by marek on 21.5.16.
  */
-public class PutHandler extends AbstractHttpHandler {
+public class PutHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange t) {
-        try {
-            checkPermission(t);
+        HttpExchangeSerivce service = new HttpExchangeSerivce(t);
 
-            int i;
-            InputStream input;
-            input = t.getRequestBody();
-            BufferedInputStream in =
-                    new BufferedInputStream(input);
-
-            String fullFileName = String.format("%s%s", Server.FILES_DIR, t.getRequestURI().toString());
-
-            File outputFile =
-                    FileCacheService.getInstance().createFile(fullFileName);
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(in)); FileWriter out = new FileWriter(outputFile)) {
-
-
-                while ((i = reader.read()) != -1) {
-                    out.write(i);
-                }
-                System.out.printf("We recieved file \"%s\"!%n", fullFileName);
-            }
-
-            sendResponseAndClose(202, "Got the file you sent me, thank you!", t);
-        } catch (IOException e) {
-            e.printStackTrace();
-            sendResponseAndClose(500, "Serverside error, sorry!", t);
-        } catch (RestrictedAccessException e) {
-            System.out.println(e.getMessage());
-            sendResponseAndClose(403, "Access resricted!", t);
+        if (!AccesHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
+            service.sendTextResponseAndClose(403, "Access restricted!");
+            return;
         }
+        File fileToLoad = new File(service.getTargetFile());
+        service.saveFileFromRequestHeader(fileToLoad);
+
+        service.sendTextResponseAndClose(202, "Got the file you sent me, thank you!");
     }
 
 }

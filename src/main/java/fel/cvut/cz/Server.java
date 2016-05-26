@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import fel.cvut.cz.utils.Util;
+import fel.cvut.cz.utils.CustomFileUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -86,10 +86,10 @@ public class Server implements Runnable {
                     );
 
 
-            Util.createDirIfNotExists(FILES_DIR);
-            Util.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
-            Util.createDirIfNotExists(CONTENT_DIR);
-            Util.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
+            CustomFileUtils.createDirIfNotExists(FILES_DIR);
+            CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
+            CustomFileUtils.createDirIfNotExists(CONTENT_DIR);
+            CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
 
             httpServer.setExecutor(threadPoolExecutor); // creates a default executor
             httpServer.start();

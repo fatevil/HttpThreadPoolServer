@@ -18,14 +18,17 @@ public class AccesHandler {
      * @return true for approved access
      */
     public static boolean check(String directory, Authorization authorization) {
-        String htaccess = directory.substring(0, directory.lastIndexOf("/")).concat("/.htaccess");
-        if (!FileCacheService.getInstance().fileExists(htaccess)) {
+        String htaccess = directory.concat("/.htaccess");
+        System.out.println(authorization.getLineFormat());
+        if (!FileCacheService.getInstance().exists(htaccess)) {
             return true;
         } else if (authorization == null) {
+            System.out.println(authorization.getLineFormat());
             return false;
         }
 
         try {
+            System.out.println(authorization.getLineFormat());
             return (Files.readAllLines(Paths.get(htaccess)).stream().anyMatch(s -> s.equals(authorization.getLineFormat())));
         } catch (IOException e) {
             e.printStackTrace();
