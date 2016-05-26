@@ -1,7 +1,9 @@
+package fel.cvut.cz;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import org.apache.commons.io.FileUtils;
-import utils.RestrictedAccessException;
+import fel.cvut.cz.utils.RestrictedAccessException;
 
 import java.io.BufferedInputStream;
 import java.io.File;

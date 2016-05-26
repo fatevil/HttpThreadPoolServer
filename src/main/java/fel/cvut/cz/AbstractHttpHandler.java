@@ -1,8 +1,10 @@
+package fel.cvut.cz;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import utils.HashGenerator;
-import utils.RestrictedAccessException;
+import fel.cvut.cz.utils.HashGenerator;
+import fel.cvut.cz.utils.RestrictedAccessException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -46,7 +48,7 @@ public abstract class AbstractHttpHandler implements HttpHandler {
                     })) {
                         return;
                     } else {
-                        throw new RestrictedAccessException("This user is not permitted to access this folder!");
+                        throw new RestrictedAccessException("This user is not permitted to fel.cvut.cz.access this folder!");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

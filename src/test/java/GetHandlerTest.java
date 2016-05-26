@@ -1,3 +1,4 @@
+import fel.cvut.cz.Server;
 import org.junit.Test;
 
 import java.io.BufferedReader;

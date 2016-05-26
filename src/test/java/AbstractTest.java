@@ -1,3 +1,4 @@
+import fel.cvut.cz.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

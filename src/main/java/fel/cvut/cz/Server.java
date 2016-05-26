@@ -1,8 +1,10 @@
+package fel.cvut.cz;
+
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import utils.Util;
+import fel.cvut.cz.utils.Util;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Server listening on localhost. Responses to GET, PUT, DELETE methods. Uses basic authentification and ThreadPool executor.
+ * fel.cvut.cz.Server listening on localhost. Responses to GET, PUT, DELETE methods. Uses basic authentification and ThreadPool executor.
  * <p>
  * Example usage:
  * <p>
@@ -39,10 +41,10 @@ import java.util.concurrent.TimeUnit;
 public class Server implements Runnable {
 
 
-    static final int SERVER_PORT = 8000;
-    static final String FILES_DIR = "files";
-    static final String CONTENT_DIR = "web_content";
-    //    private static final Logger logger = Logger.getLogger(Server.class);
+    public static final int SERVER_PORT = 8000;
+    public static final String FILES_DIR = "files";
+    public static final String CONTENT_DIR = "web_content";
+    //    private static final Logger logger = Logger.getLogger(fel.cvut.cz.Server.class);
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;

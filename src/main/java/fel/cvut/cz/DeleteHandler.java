@@ -1,5 +1,7 @@
+package fel.cvut.cz;
+
 import com.sun.net.httpserver.HttpExchange;
-import utils.RestrictedAccessException;
+import fel.cvut.cz.utils.RestrictedAccessException;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,3 +1,5 @@
+package fel.cvut.cz;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;

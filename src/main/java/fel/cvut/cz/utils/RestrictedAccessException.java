@@ -1,4 +1,4 @@
-package utils;
+package fel.cvut.cz.utils;
 
 /**
  * Created by marek on 22.5.16.

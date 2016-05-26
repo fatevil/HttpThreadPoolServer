@@ -1,4 +1,4 @@
-package utils;
+package fel.cvut.cz.utils;
 
 import java.io.File;
 import java.io.IOException;
