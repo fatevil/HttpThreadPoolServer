@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import fel.cvut.cz.FileCacheService;
 import fel.cvut.cz.access.AccesHandler;
-import fel.cvut.cz.utils.HttpExchangeSerivce;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package fel.cvut.cz.utils;
+package fel.cvut.cz.handling;
 
 import com.sun.net.httpserver.HttpExchange;
 import fel.cvut.cz.Server;
