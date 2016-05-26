@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by marek on 22.5.16.
  */
-public class Util {
+public class CustomFileUtils {
     public static void createDirIfNotExists(String directoryName) {
         File theDir = new File(directoryName);
 
