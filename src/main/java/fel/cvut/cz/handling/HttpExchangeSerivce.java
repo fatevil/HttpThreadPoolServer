@@ -32,9 +32,13 @@ public class HttpExchangeSerivce {
     public String getTargetFile() {
         if (file == null) {
             if (isTextOrFile()) {
-                this.file = Server.CONTENT_DIR + httpExchange.getRequestURI();
+                if (httpExchange.getRequestURI().toString().equals("/")) {
+                    this.file = Server.CONTENT_DIR + "/index.html";
+                } else {
+                    this.file = Server.CONTENT_DIR + httpExchange.getRequestURI().toString();
+                }
             } else {
-                this.file = Server.FILES_DIR + httpExchange.getRequestURI();
+                this.file = Server.FILES_DIR + httpExchange.getRequestURI().toString();
             }
         }
         return file;

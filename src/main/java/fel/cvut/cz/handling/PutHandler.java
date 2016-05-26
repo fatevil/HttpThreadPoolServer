@@ -2,7 +2,7 @@ package fel.cvut.cz.handling;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import fel.cvut.cz.access.AccesHandler;
+import fel.cvut.cz.access.AccessHandler;
 
 import java.io.File;
 
@@ -15,7 +15,7 @@ public class PutHandler implements HttpHandler {
     public void handle(HttpExchange t) {
         HttpExchangeSerivce service = new HttpExchangeSerivce(t);
 
-        if (!AccesHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
+        if (!AccessHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
             service.sendTextResponseAndClose(403, "Access restricted!");
             return;
         }

@@ -43,7 +43,7 @@ public class CustomFileUtils {
      */
     public static void putHtaccessToDir(String directory) {
         Path file = Paths.get(String.format("%s/.htaccess", directory));
-        if (!Files.exists(file)) {
+        if (Files.exists(file)) {
             return;
         }
 

@@ -20,6 +20,11 @@ public class Authorization {
 
     private void decodeBase64() {
         // Decode data on other side, by processing encoded data
+        if (base64.length() <= 5) {
+            this.username = "";
+            this.password = "";
+            return;
+        }
         byte[] valueDecoded = Base64.decodeBase64((base64.substring(5)));
         String decodedString = new String(valueDecoded);
         int index = decodedString.indexOf(":");
