@@ -19,7 +19,6 @@ public class AccesHandler {
      */
     public static boolean check(String directory, Authorization authorization) {
         String htaccess = directory.concat("/.htaccess");
-        System.out.println(authorization.getLineFormat());
         if (!FileCacheService.getInstance().exists(htaccess)) {
             return true;
         } else if (authorization == null) {

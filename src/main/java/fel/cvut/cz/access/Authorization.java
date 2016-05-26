@@ -43,9 +43,7 @@ public class Authorization {
 
     public String getLineFormat() {
         if (username == null) {
-            System.out.println("decode");
             decodeBase64();
-            System.out.println("done");
         }
         return String.format("%s:%s", username, password);
     }
