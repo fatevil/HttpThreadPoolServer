@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 /**
  * Created by marek on 26.5.16.
  */
-public class AccesHandler {
+public class AccessHandler {
 
     /**
      * @param directory     in which to check .htaccess
@@ -22,12 +22,10 @@ public class AccesHandler {
         if (!FileCacheService.getInstance().exists(htaccess)) {
             return true;
         } else if (authorization == null) {
-            System.out.println(authorization.getLineFormat());
             return false;
         }
 
         try {
-            System.out.println(authorization.getLineFormat());
             return (Files.readAllLines(Paths.get(htaccess)).stream().anyMatch(s -> s.equals(authorization.getLineFormat())));
         } catch (IOException e) {
             e.printStackTrace();
