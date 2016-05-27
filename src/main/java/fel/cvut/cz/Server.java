@@ -123,8 +123,10 @@ public class Server implements Runnable {
                     return;
                 case "PUT":
                     new PutHandler().handle(t);
+                    return;
                 default:
                     new HttpExchangeSerivce(t).sendTextResponseAndClose(405, String.format("Request method %s is not allowed!", t.getRequestMethod()));
+                    return;
             }
         }
     }
