@@ -36,28 +36,11 @@ import java.util.concurrent.Executors;
  */
 public class Server implements Runnable {
 
-
     public static final int SERVER_PORT = 8000;
     public static final String FILES_DIR = "files";
     public static final String CONTENT_DIR = "web_content";
-    //    private static final Logger logger = Logger.getLogger(fel.cvut.cz.Server.class);
-    private final int corePoolSize;
-    private final int maxPoolSize;
-    private final long keepAliveTime;
 
     private HttpSocketServer httpServer;
-
-    public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
-        this.corePoolSize = corePoolSize;
-        this.maxPoolSize = maxPoolSize;
-        this.keepAliveTime = keepAliveTime;
-    }
-
-    public Server() {
-        this.corePoolSize = 5;
-        this.maxPoolSize = 100;
-        this.keepAliveTime = 5000;
-    }
 
     public static void main(String[] args) throws Exception {
         Server server = new Server();
@@ -73,7 +56,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        httpServer = new HttpSocketServer();
+        httpServer = new HttpSocketServer(SERVER_PORT);
         httpServer.setHandler(new RequestHandler());
 
         setupFolders();

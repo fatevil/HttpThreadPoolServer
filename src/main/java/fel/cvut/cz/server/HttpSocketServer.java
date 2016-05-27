@@ -92,7 +92,7 @@ public class HttpSocketServer implements Runnable {
     public void stop() {
         this.isRunning = false;
         executorService.shutdown();
-        System.out.println("shutdown");
+        logger.info("Server has been shutdown!");
     }
 
     public void start() {
