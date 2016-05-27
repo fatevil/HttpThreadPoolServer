@@ -14,11 +14,10 @@ public class HttpSocketServerRequest implements Runnable {
 
     private final HttpSocketServerHandler handler;
     private final Socket connection;
-
+    private final Headers headers = new Headers();
     private String requestMethod;
     private String requestURI;
     private String requestProtocol;
-    private final Headers headers = new Headers();
     private InputStream requestBody;
 
     public HttpSocketServerRequest(HttpSocketServerHandler handler, Socket connection) {
@@ -68,7 +67,7 @@ public class HttpSocketServerRequest implements Runnable {
         }
 
         // skip empty lines
-        while (line.isEmpty()) {
+        while (line != null && line.isEmpty()) {
             line = input.readLine();
         }
 
