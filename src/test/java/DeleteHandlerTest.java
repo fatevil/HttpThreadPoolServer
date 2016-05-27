@@ -1,3 +1,4 @@
+import fel.cvut.cz.Server;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -18,7 +19,7 @@ public class DeleteHandlerTest extends AbstractTest {
 
     @Test
     public void testHandle() throws Exception {
-        createTestingFile("test_file_to_be_deleted.txt");
+        createTestingFile(Server.FILES_DIR + "/test_file_to_be_deleted.txt");
 
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
@@ -27,6 +28,7 @@ public class DeleteHandlerTest extends AbstractTest {
 
         // optional default is GET
         con.setRequestMethod("DELETE");
+        con.setRequestProperty("Content-Type", "*/*");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
 
         int responseCode = con.getResponseCode();
@@ -42,7 +44,6 @@ public class DeleteHandlerTest extends AbstractTest {
             response.append("\n");
         }
         in.close();
-
         assertTrue(responseCode == 200);
         assertFalse(new File("files/test_file_to_be_deleted.txt").exists());
     }
@@ -56,6 +57,7 @@ public class DeleteHandlerTest extends AbstractTest {
 
         // optional default is GET
         con.setRequestMethod("DELETE");
+        con.setRequestProperty("Content-Type", "*/*");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
 
         int responseCode = con.getResponseCode();

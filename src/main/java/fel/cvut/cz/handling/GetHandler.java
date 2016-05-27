@@ -32,13 +32,11 @@ public class GetHandler implements HttpHandler {
         }
 
         File outputFile = FileCacheService.getInstance().get(service.getTargetFile());
-        if (!service.textNotFile()) {
+        if (!service.isTextNotFile()) {
             // add the required response header for a PDF file
             System.out.println("Sending binary!");
             service.addResponseHeader("Content-Type", "application/x-www-form-urlencoded");
         }
-
-
         byte[] bytearray = new byte[(int) outputFile.length()];
         try (FileInputStream fis = new FileInputStream(outputFile);
              BufferedInputStream bis = new BufferedInputStream(fis)) {

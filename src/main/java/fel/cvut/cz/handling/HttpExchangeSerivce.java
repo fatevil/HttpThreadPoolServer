@@ -19,19 +19,43 @@ public class HttpExchangeSerivce {
 
     public HttpExchangeSerivce(HttpExchange httpExchange) {
         this.httpExchange = httpExchange;
+        System.out.println(isTextNotFile());
     }
 
-    public boolean isTextOrFile() {
+
+    /**
+     * Text files are given to dir :web_content. - default for PUT
+     * <p>
+     * Other files are given to dir: files -  default for other methods
+     * <p>
+     *
+     * @return wheter to put files to dir "files" or "web_content"
+     */
+    public boolean isTextNotFile() {
         if (textNotFile == null) {
-            String responseDataType = httpExchange.getRequestHeaders().getFirst("Accept");
-            return textNotFile = (responseDataType.equals("*/*") || responseDataType.contains("text"));
+            String responseDataType;
+            if (httpExchange.getRequestMethod().toString().equals("PUT")) {
+                responseDataType = httpExchange.getRequestHeaders().getFirst("Content-Type");
+                return responseDataType.contains("text");
+            } else {
+                if (httpExchange.getRequestMethod().toString().equals("DELETE")) {
+                    responseDataType = httpExchange.getRequestHeaders().getFirst("Content-Type");
+                    return textNotFile = responseDataType.contains("text");
+                } else {
+                    responseDataType = httpExchange.getRequestHeaders().getFirst("Accept");
+                    return (responseDataType.equals("*/*") || responseDataType.contains("text"));
+                }
+
+
+            }
         }
+
         return textNotFile;
     }
 
     public String getTargetFile() {
         if (file == null) {
-            if (isTextOrFile()) {
+            if (isTextNotFile()) {
                 if (httpExchange.getRequestURI().toString().equals("/")) {
                     this.file = Server.CONTENT_DIR + "/index.html";
                 } else {
@@ -75,9 +99,6 @@ public class HttpExchangeSerivce {
         httpExchange.getResponseHeaders().add(key, value);
     }
 
-    public Boolean textNotFile() {
-        return textNotFile;
-    }
 
     public void saveFileFromRequestHeader(File destinationFile) {
         int i;

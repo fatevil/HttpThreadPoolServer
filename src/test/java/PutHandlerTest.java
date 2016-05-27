@@ -21,17 +21,18 @@ public class PutHandlerTest extends AbstractTest {
     @Test
     public void testHandlePut() throws Exception {
         createTestingFile("tested_file.txt");
-        String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
+        String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
         // optional default is GET
         con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "*/*");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
         con.setDoOutput(true);
 
-        byte[] encoded = Files.readAllBytes(Paths.get(String.format("%s/tested_file.txt", Server.FILES_DIR)));
+        byte[] encoded = Files.readAllBytes(Paths.get(String.format("tested_file.txt")));
         con.getOutputStream().write(encoded);
 
 
@@ -51,22 +52,23 @@ public class PutHandlerTest extends AbstractTest {
 
 
         assertTrue(responseCode == 202);
-        assertArrayEquals(encoded, Files.readAllBytes(Paths.get(String.format("%s/tested_file.txt", Server.FILES_DIR))));
+        assertArrayEquals(encoded, Files.readAllBytes(Paths.get(String.format("tested_file.txt"))));
     }
 
     @Test
     public void testHandlePutRestricted() throws Exception {
         createTestingFile("tested_file.txt");
-        String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
+        String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
         // optional default is GET
         con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "*/*");
         con.setDoOutput(true);
 
-        byte[] encoded = Files.readAllBytes(Paths.get(String.format("%s/tested_file.txt", Server.FILES_DIR)));
+        byte[] encoded = Files.readAllBytes(Paths.get("tested_file.txt"));
         con.getOutputStream().write(encoded);
 
 
@@ -83,7 +85,7 @@ public class PutHandlerTest extends AbstractTest {
             response.append("\n");
         }
         in.close();
-        File f = new File("forbidden_folder/tested_file.txt");
+        File f = new File(String.format("%sforbidden_folder_test/tested_file.txt", Server.FILES_DIR));
         assertTrue(responseCode == 403);
         assertTrue(!f.exists());
     }

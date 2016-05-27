@@ -1,8 +1,8 @@
 import fel.cvut.cz.Server;
+import fel.cvut.cz.utils.CustomFileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -24,17 +24,28 @@ public class AbstractTest {
         server = new Server();
         Thread t = new Thread(server);
         server.run();
+        CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
     }
 
     @AfterClass
     public static void tearDown() {
         server.terminate();
-        new File("forbidden_folder/tested_file.txt").delete();
-        new File("tested_file.txt").delete();
+        try {
+            Files.deleteIfExists(Paths.get("forbidden_folder_test/tested_file.txt"));
+            Files.deleteIfExists(Paths.get("tested_file.txt"));
+            Files.deleteIfExists(Paths.get("file_to_be_tested.txt"));
+            Files.deleteIfExists(Paths.get("test_file_to_be_deleted.txt"));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/.htaccess", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/tested_file.txt", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test", Server.FILES_DIR)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void createTestingFile(String name) {
-        Path file = Paths.get(String.format("%s/%s", Server.FILES_DIR, name));
+        Path file = Paths.get(name);
         if (Files.exists(file)) {
             return;
         }
@@ -42,7 +53,7 @@ public class AbstractTest {
         List<String> lines = Arrays.asList("Hi there! This is a test file and it should be retrieved by remote client!");
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
-            System.out.printf("Created %s in %s%n", name, Server.FILES_DIR);
+            System.out.printf("Created %s \n", name);
         } catch (IOException e) {
             e.printStackTrace();
         }

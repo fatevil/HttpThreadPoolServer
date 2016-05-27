@@ -50,7 +50,7 @@ public class GetHandlerTest extends AbstractTest {
 
     @Test
     public void testHandleRestrictedFileSuccess() throws Exception {
-        createTestingFile("/forbidden_folder/tested_file.txt");
+        createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
         String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
 
@@ -86,7 +86,7 @@ public class GetHandlerTest extends AbstractTest {
 
     @Test
     public void testHandleRestrictedFileFail() throws Exception {
-        createTestingFile("/forbidden_folder/tested_file.txt");
+        createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
         String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
 

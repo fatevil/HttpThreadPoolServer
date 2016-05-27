@@ -1,3 +1,4 @@
+import fel.cvut.cz.Server;
 import fel.cvut.cz.access.AccessHandler;
 import fel.cvut.cz.access.Authorization;
 import fel.cvut.cz.utils.CustomFileUtils;
@@ -5,7 +6,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static fel.cvut.cz.Server.FILES_DIR;
 import static org.junit.Assert.assertFalse;
@@ -30,8 +33,12 @@ public class AccessHandlerTest {
 
     @AfterClass
     public static void tearDown() {
-        new File("forbidden_folder_test/.htaccess").delete();
-        new File("tested_file.txt").delete();
+        try {
+            Files.deleteIfExists(Paths.get(Server.FILES_DIR + "/forbidden_folder_test/.htaccess"));
+            Files.deleteIfExists(Paths.get(Server.FILES_DIR + "/forbidden_folder_test"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

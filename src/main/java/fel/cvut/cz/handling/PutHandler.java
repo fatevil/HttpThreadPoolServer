@@ -21,7 +21,6 @@ public class PutHandler implements HttpHandler {
         }
         File fileToLoad = new File(service.getTargetFile());
         service.saveFileFromRequestHeader(fileToLoad);
-
         service.sendTextResponseAndClose(202, "Got the file you sent me, thank you!");
     }
 

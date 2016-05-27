@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import fel.cvut.cz.handling.DeleteHandler;
 import fel.cvut.cz.handling.GetHandler;
+import fel.cvut.cz.handling.HttpExchangeSerivce;
 import fel.cvut.cz.handling.PutHandler;
 import fel.cvut.cz.utils.CustomFileUtils;
 
@@ -51,7 +52,7 @@ public class Server implements Runnable {
     private final int corePoolSize;
     private final int maxPoolSize;
     private final long keepAliveTime;
-    
+
     private HttpServer httpServer;
 
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
@@ -111,6 +112,7 @@ public class Server implements Runnable {
         @Override
         public void handle(HttpExchange t) throws IOException {
             System.out.println("Made connection!");
+            System.out.println(t.getRequestURI());
 
             switch (t.getRequestMethod()) {
                 case "GET":
@@ -121,6 +123,8 @@ public class Server implements Runnable {
                     return;
                 case "PUT":
                     new PutHandler().handle(t);
+                default:
+                    new HttpExchangeSerivce(t).sendTextResponseAndClose(405, String.format("Request method %s is not allowed!", t.getRequestMethod()));
             }
         }
     }
