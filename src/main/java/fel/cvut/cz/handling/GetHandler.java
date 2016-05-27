@@ -1,9 +1,9 @@
 package fel.cvut.cz.handling;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import fel.cvut.cz.FileCacheService;
 import fel.cvut.cz.access.AccessHandler;
+import fel.cvut.cz.server.HttpSocketServerRequest;
+import fel.cvut.cz.server.HttpSocketServerResponse;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -13,11 +13,11 @@ import java.io.IOException;
 /**
  * Created by marek on 21.5.16.
  */
-public class GetHandler implements HttpHandler {
+public class GetHandler implements HttpSocketServerHandler {
 
     @Override
-    public void handle(HttpExchange t) {
-        HttpExchangeSerivce service = new HttpExchangeSerivce(t);
+    public void handle(HttpSocketServerRequest request, HttpSocketServerResponse response) {
+        HttpExchangeSerivce service = new HttpExchangeSerivce(request, response);
 
         giveResponse(service);
     }
@@ -33,10 +33,11 @@ public class GetHandler implements HttpHandler {
 
         File outputFile = FileCacheService.getInstance().get(service.getTargetFile());
         if (!service.isTextNotFile()) {
-            // add the required response header for a PDF file
+            // add the required response header for binary files
             System.out.println("Sending binary!");
-            service.addResponseHeader("Content-Type", "application/x-www-form-urlencoded");
+            service.addResponseHeader("Content-Type", "attachement; application/x-www-form-urlencoded");
         }
+        // TODO: binary content looks like text on output
         byte[] bytearray = new byte[(int) outputFile.length()];
         try (FileInputStream fis = new FileInputStream(outputFile);
              BufferedInputStream bis = new BufferedInputStream(fis)) {

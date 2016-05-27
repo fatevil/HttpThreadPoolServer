@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by marek on 22.5.16.
@@ -20,10 +22,17 @@ public class AbstractTest {
     protected static Server server;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() throws IOException, InterruptedException {
+
+        //TODO:tests wont work when they're all instantiated at once, it must be one by one (classes)
+
         server = new Server();
-        Thread t = new Thread(server);
-        server.run();
+
+        ExecutorService service = Executors.newFixedThreadPool(100);
+        service.submit(server);
+
+
+        Thread.sleep(1000);
         CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
         CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
     }

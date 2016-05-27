@@ -1,21 +1,13 @@
 package fel.cvut.cz;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-import fel.cvut.cz.handling.DeleteHandler;
-import fel.cvut.cz.handling.GetHandler;
-import fel.cvut.cz.handling.HttpExchangeSerivce;
-import fel.cvut.cz.handling.PutHandler;
+import fel.cvut.cz.handling.*;
+import fel.cvut.cz.server.HttpSocketServer;
+import fel.cvut.cz.server.HttpSocketServerException;
+import fel.cvut.cz.server.HttpSocketServerRequest;
+import fel.cvut.cz.server.HttpSocketServerResponse;
 import fel.cvut.cz.utils.CustomFileUtils;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -53,7 +45,7 @@ public class Server implements Runnable {
     private final int maxPoolSize;
     private final long keepAliveTime;
 
-    private HttpServer httpServer;
+    private HttpSocketServer httpServer;
 
     public Server(int corePoolSize, int maxPoolSize, long keepAliveTime) {
         this.corePoolSize = corePoolSize;
@@ -72,60 +64,50 @@ public class Server implements Runnable {
         server.run();
     }
 
+    public static void setupFolders() {
+        CustomFileUtils.createDirIfNotExists(FILES_DIR);
+        CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
+        CustomFileUtils.createDirIfNotExists(CONTENT_DIR);
+        CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
+    }
+
     @Override
     public void run() {
+        httpServer = new HttpSocketServer();
+        httpServer.setHandler(new RequestHandler());
+
+        setupFolders();
         try {
-            httpServer = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
-
-            HttpContext cc = httpServer.createContext("/", new RequestHandler());
-            cc.setAuthenticator(null);
-
-            ExecutorService threadPoolExecutor =
-                    new ThreadPoolExecutor(
-                            corePoolSize,
-                            maxPoolSize,
-                            keepAliveTime,
-                            TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>()
-                    );
-
-
-            CustomFileUtils.createDirIfNotExists(FILES_DIR);
-            CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
-            CustomFileUtils.createDirIfNotExists(CONTENT_DIR);
-            CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
-
-            httpServer.setExecutor(threadPoolExecutor); // creates a default executor
-            httpServer.start();
-        } catch (IOException e) {
+            httpServer.setExecutor(Executors.newFixedThreadPool(100)); // creates a default executor
+        } catch (HttpSocketServerException e) {
             e.printStackTrace();
         }
+        httpServer.start();
 
     }
 
     public void terminate() {
-        httpServer.stop(1);
+        httpServer.stop();
     }
 
-
-    static class RequestHandler implements HttpHandler {
+    static class RequestHandler implements HttpSocketServerHandler {
         @Override
-        public void handle(HttpExchange t) throws IOException {
+        public void handle(HttpSocketServerRequest httpSocketServerRequest, HttpSocketServerResponse httpSocketServerResponse) {
             System.out.println("Made connection!");
-            System.out.println(t.getRequestURI());
 
-            switch (t.getRequestMethod()) {
+            switch (httpSocketServerRequest.getRequestMethod()) {
                 case "GET":
-                    new GetHandler().handle(t);
+                    new GetHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
                     return;
                 case "DELETE":
-                    new DeleteHandler().handle(t);
+                    new DeleteHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
                     return;
                 case "PUT":
-                    new PutHandler().handle(t);
+                    System.out.println("at least im gonna try");
+                    new PutHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
                     return;
                 default:
-                    new HttpExchangeSerivce(t).sendTextResponseAndClose(405, String.format("Request method %s is not allowed!", t.getRequestMethod()));
+                    new HttpExchangeSerivce(httpSocketServerRequest, httpSocketServerResponse).sendTextResponseAndClose(405, String.format("Request method %s is not allowed!", httpSocketServerRequest.getRequestMethod()));
                     return;
             }
         }

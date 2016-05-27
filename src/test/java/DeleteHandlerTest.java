@@ -49,7 +49,7 @@ public class DeleteHandlerTest extends AbstractTest {
     }
 
     @Test
-    public void testHandleNonExistingFile() throws IOException {
+    public void testHandleNonExistingFile() throws IOException, InterruptedException {
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
         URL obj = new URL(url);

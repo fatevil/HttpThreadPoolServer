@@ -1,8 +1,10 @@
 package fel.cvut.cz.handling;
 
-import com.sun.net.httpserver.HttpExchange;
 import fel.cvut.cz.Server;
 import fel.cvut.cz.access.Authorization;
+import fel.cvut.cz.server.HttpSocketServerException;
+import fel.cvut.cz.server.HttpSocketServerRequest;
+import fel.cvut.cz.server.HttpSocketServerResponse;
 
 import java.io.*;
 
@@ -11,17 +13,17 @@ import java.io.*;
  */
 public class HttpExchangeSerivce {
 
-    private final HttpExchange httpExchange;
+    private final HttpSocketServerRequest request;
+    private final HttpSocketServerResponse response;
     private String file;
     private String directory;
     private Authorization authorization;
     private Boolean textNotFile = null;
 
-    public HttpExchangeSerivce(HttpExchange httpExchange) {
-        this.httpExchange = httpExchange;
-        System.out.println(isTextNotFile());
+    public HttpExchangeSerivce(HttpSocketServerRequest request, HttpSocketServerResponse response) {
+        this.request = request;
+        this.response = response;
     }
-
 
     /**
      * Text files are given to dir :web_content. - default for PUT
@@ -34,19 +36,17 @@ public class HttpExchangeSerivce {
     public boolean isTextNotFile() {
         if (textNotFile == null) {
             String responseDataType;
-            if (httpExchange.getRequestMethod().toString().equals("PUT")) {
-                responseDataType = httpExchange.getRequestHeaders().getFirst("Content-Type");
+            if (request.getRequestMethod().toString().equals("PUT")) {
+                responseDataType = request.getRequestHeaders().getFirst("Content-Type");
                 return responseDataType.contains("text");
             } else {
-                if (httpExchange.getRequestMethod().toString().equals("DELETE")) {
-                    responseDataType = httpExchange.getRequestHeaders().getFirst("Content-Type");
+                if (request.getRequestMethod().toString().equals("DELETE")) {
+                    responseDataType = request.getRequestHeaders().getFirst("Content-Type");
                     return textNotFile = responseDataType.contains("text");
                 } else {
-                    responseDataType = httpExchange.getRequestHeaders().getFirst("Accept");
+                    responseDataType = request.getRequestHeaders().getFirst("Accept");
                     return (responseDataType.equals("*/*") || responseDataType.contains("text"));
                 }
-
-
             }
         }
 
@@ -56,13 +56,13 @@ public class HttpExchangeSerivce {
     public String getTargetFile() {
         if (file == null) {
             if (isTextNotFile()) {
-                if (httpExchange.getRequestURI().toString().equals("/")) {
+                if (request.getRequestURI().toString().equals("/")) {
                     this.file = Server.CONTENT_DIR + "/index.html";
                 } else {
-                    this.file = Server.CONTENT_DIR + httpExchange.getRequestURI().toString();
+                    this.file = Server.CONTENT_DIR + request.getRequestURI().toString();
                 }
             } else {
-                this.file = Server.FILES_DIR + httpExchange.getRequestURI().toString();
+                this.file = Server.FILES_DIR + request.getRequestURI().toString();
             }
         }
         return file;
@@ -76,8 +76,8 @@ public class HttpExchangeSerivce {
     }
 
     public Authorization getAuthorization() {
-        if (httpExchange.getRequestHeaders().containsKey("Authorization")) {
-            authorization = new Authorization(httpExchange.getRequestHeaders().getFirst("Authorization"));
+        if (request.getRequestHeaders().containsKey("Authorization")) {
+            authorization = new Authorization(request.getRequestHeaders().getFirst("Authorization"));
         }
         return authorization;
     }
@@ -87,23 +87,25 @@ public class HttpExchangeSerivce {
     }
 
     public void sendResponseAndClose(int code, byte[] bytearray, long lengthOfOutputFile) {
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            httpExchange.sendResponseHeaders(code, lengthOfOutputFile);
+        try (OutputStream os = response.getResponseBody()) {
+            response.sendResponseHeaders(code, lengthOfOutputFile);
             os.write(bytearray, 0, bytearray.length);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (HttpSocketServerException e) {
             e.printStackTrace();
         }
     }
 
     public void addResponseHeader(String key, String value) {
-        httpExchange.getResponseHeaders().add(key, value);
+        response.getResponseHeaders().add(key, value);
     }
 
 
     public void saveFileFromRequestHeader(File destinationFile) {
         int i;
         InputStream input;
-        input = httpExchange.getRequestBody();
+        input = request.getRequestBody();
         BufferedInputStream in =
                 new BufferedInputStream(input);
 
@@ -114,10 +116,12 @@ public class HttpExchangeSerivce {
                 out.write(i);
             }
             System.out.printf("File %s saved!%n", fullFileName);
+            input.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println(String.format("File %s not saved!", fullFileName));
         }
+
 
     }
 }

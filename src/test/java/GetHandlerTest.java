@@ -69,7 +69,7 @@ public class GetHandlerTest extends AbstractTest {
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuilder response = new StringBuilder();
-
+        in.readLine();
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
             response.append("\n");
@@ -80,6 +80,8 @@ public class GetHandlerTest extends AbstractTest {
         String r = new String(encoded);
 
         assertTrue(responseCode == 200);
+        System.out.println("1: " + response.toString());
+        System.out.println("1: " + r);
         assertTrue(r.equals(response.toString()));
 
     }

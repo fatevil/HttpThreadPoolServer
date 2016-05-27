@@ -1,9 +1,9 @@
 package fel.cvut.cz.handling;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import fel.cvut.cz.FileCacheService;
 import fel.cvut.cz.access.AccessHandler;
+import fel.cvut.cz.server.HttpSocketServerRequest;
+import fel.cvut.cz.server.HttpSocketServerResponse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,12 +12,14 @@ import java.nio.file.Paths;
 /**
  * Created by marek on 21.5.16.
  */
-public class DeleteHandler implements HttpHandler {
-    @Override
-    public void handle(HttpExchange t) {
-        HttpExchangeSerivce service = new HttpExchangeSerivce(t);
+public class DeleteHandler implements HttpSocketServerHandler {
 
+    @Override
+    public void handle(HttpSocketServerRequest request, HttpSocketServerResponse response) {
+        HttpExchangeSerivce service = new HttpExchangeSerivce(request, response);
         try {
+            System.out.println(request.getRequestURI());
+            System.out.println(service.getTargetFile());
             if (!AccessHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
                 service.sendTextResponseAndClose(403, "Access restricted!");
                 return;
