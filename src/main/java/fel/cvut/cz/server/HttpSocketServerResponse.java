@@ -18,6 +18,12 @@ public class HttpSocketServerResponse {
     private long lengthOfOutputFile;
 
 
+    /**
+     * Default constructor specifying socket to send the response to.
+     *
+     * @param connection socket containing OutputStream to use for sending response
+     * @throws IOException is thrown if the socket is already closed
+     */
     public HttpSocketServerResponse(Socket connection) throws IOException {
         this.connection = connection;
         if (connection.getOutputStream() != null) {
@@ -25,10 +31,24 @@ public class HttpSocketServerResponse {
         }
     }
 
+    /**
+     * Gets OutputStream that should be the response sent to.
+     *
+     * @return put response to this
+     * @throws IOException is thrown if the stream is already closed
+     */
     public OutputStream getResponseBody() throws IOException {
         return connection.getOutputStream();
     }
 
+    /**
+     * Creates structured response header.
+     *
+     * @param code               http response code
+     * @param lengthOfOutputFile length of following response body
+     * @throws HttpSocketServerException is thrown if the output stream is unreachable
+     * @throws IOException               is thrown when trying to write to unreachable stream
+     */
     public void sendResponseHeaders(int code, long lengthOfOutputFile) throws HttpSocketServerException, IOException {
         this.code = code;
         this.lengthOfOutputFile = lengthOfOutputFile;
@@ -60,7 +80,6 @@ public class HttpSocketServerResponse {
                     b.append("\n");
                 }
             });
-
             writeLine(b.toString());
         }
 
@@ -69,10 +88,19 @@ public class HttpSocketServerResponse {
 
     }
 
+    /**
+     * Write bytes to response OutputStream.
+     *
+     * @param line string to be written
+     * @throws IOException is thrown when trying to write to unreachable stream
+     */
     private void writeLine(String line) throws IOException {
         writer.writeBytes(line + "\n");
     }
 
+    /**
+     * Gets object containing response headers.
+     */
     public Headers getResponseHeaders() {
         return headers;
     }
