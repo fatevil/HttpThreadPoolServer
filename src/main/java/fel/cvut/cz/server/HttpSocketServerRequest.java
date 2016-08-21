@@ -6,12 +6,16 @@ import fel.cvut.cz.handling.HttpSocketServerHandler;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
+ * Run this class to parse HttpRequest from socket InputStream, put it into nice a form and make response with given handler.
+ * <p>
  * Created by marek on 27.5.16.
  */
 public class HttpSocketServerRequest implements Runnable {
 
+    private static final Logger logger = Logger.getLogger(HttpSocketServerRequest.class.getName());
     private final HttpSocketServerHandler handler;
     private final Socket connection;
     private final Headers headers = new Headers();
@@ -20,11 +24,20 @@ public class HttpSocketServerRequest implements Runnable {
     private String requestProtocol;
     private InputStream requestBody;
 
+    /**
+     * Returns nicely represented http request.
+     *
+     * @param handler    object solving requested tasks
+     * @param connection socket to read input from
+     */
     public HttpSocketServerRequest(HttpSocketServerHandler handler, Socket connection) {
         this.handler = handler;
         this.connection = connection;
     }
 
+    /**
+     * Gets string specifying request method like GET, PUT etc.
+     */
     public String getRequestMethod() {
         return requestMethod;
     }
@@ -33,14 +46,23 @@ public class HttpSocketServerRequest implements Runnable {
         return headers;
     }
 
+    /**
+     * Gets exact requested address.
+     */
     public String getRequestURI() {
         return requestURI;
     }
 
+    /**
+     * Returns part of the request behind headers - mostly files.
+     */
     public InputStream getRequestBody() {
         return requestBody;
     }
 
+    /**
+     * Creates object for making response, parses request and invokes handler.
+     */
     @Override
     public void run() {
         try {
@@ -55,6 +77,12 @@ public class HttpSocketServerRequest implements Runnable {
         }
     }
 
+    /**
+     * Goes through InputStream and makes object representation of it.
+     *
+     * @throws IOException               is thrown if the input stream is empty or already closed
+     * @throws HttpSocketServerException is thrown when http protocol is violated
+     */
     public void parseRequest() throws IOException, HttpSocketServerException {
         // Used to read in from the socket
         BufferedReader input = new BufferedReader(

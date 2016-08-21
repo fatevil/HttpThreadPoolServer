@@ -8,10 +8,12 @@ import fel.cvut.cz.server.HttpSocketServerResponse;
 import fel.cvut.cz.utils.CustomFileUtils;
 
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
- * fel.cvut.cz.Server listening on localhost. Responses to GET, PUT, DELETE methods. Uses basic authentification and ThreadPool executor.
+ * fel.cvut.cz.Server listening on localhost. Responses to GET, PUT, DELETE methods. Uses basic authentication and ThreadPool executor.
  * <p>
  * Example usage:
  * <p>
@@ -35,10 +37,10 @@ import java.util.concurrent.Executors;
  * Created by marek on 21.5.16.
  */
 public class Server implements Runnable {
-
     public static final int SERVER_PORT = 8000;
     public static final String FILES_DIR = "files";
     public static final String CONTENT_DIR = "web_content";
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     private HttpSocketServer httpServer;
 
@@ -47,6 +49,9 @@ public class Server implements Runnable {
         server.run();
     }
 
+    /**
+     * Creates folder with restricted access.
+     */
     public static void setupFolders() {
         CustomFileUtils.createDirIfNotExists(FILES_DIR);
         CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder", FILES_DIR));
@@ -54,6 +59,9 @@ public class Server implements Runnable {
         CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder", FILES_DIR));
     }
 
+    /**
+     * Instantiates HttpSocketServer, creates content folders and sets fixed-size thread pool executor for incoming connections.
+     */
     @Override
     public void run() {
         httpServer = new HttpSocketServer(SERVER_PORT);
@@ -61,14 +69,18 @@ public class Server implements Runnable {
 
         setupFolders();
         try {
-            httpServer.setExecutor(Executors.newFixedThreadPool(100)); // creates a default executor
+            httpServer.setExecutor(Executors.newFixedThreadPool(50)); // creates a default executor
         } catch (HttpSocketServerException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not start server!", e);
+
         }
         httpServer.start();
-
+        logger.info("Server started on port " + SERVER_PORT);
     }
 
+    /**
+     * Immediately stop server and executing tasks.
+     */
     public void terminate() {
         httpServer.stop();
     }
@@ -76,22 +88,19 @@ public class Server implements Runnable {
     static class RequestHandler implements HttpSocketServerHandler {
         @Override
         public void handle(HttpSocketServerRequest httpSocketServerRequest, HttpSocketServerResponse httpSocketServerResponse) {
-            System.out.println("Made connection!");
-
             switch (httpSocketServerRequest.getRequestMethod()) {
                 case "GET":
                     new GetHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
-                    return;
+                    break;
                 case "DELETE":
                     new DeleteHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
-                    return;
+                    break;
                 case "PUT":
-                    System.out.println("at least im gonna try");
                     new PutHandler().handle(httpSocketServerRequest, httpSocketServerResponse);
-                    return;
+                    break;
                 default:
                     new HttpExchangeSerivce(httpSocketServerRequest, httpSocketServerResponse).sendTextResponseAndClose(405, String.format("Request method %s is not allowed!", httpSocketServerRequest.getRequestMethod()));
-                    return;
+                    break;
             }
         }
     }
