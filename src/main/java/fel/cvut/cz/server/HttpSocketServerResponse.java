@@ -6,11 +6,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * Created by marek on 27.5.16.
  */
 public class HttpSocketServerResponse {
+    private static final Logger logger = Logger.getLogger(HttpSocketServerResponse.class.getName());
     private final Headers headers = new Headers();
     private final Socket connection;
     private DataOutputStream writer;
@@ -53,6 +55,8 @@ public class HttpSocketServerResponse {
         this.code = code;
         this.lengthOfOutputFile = lengthOfOutputFile;
 
+        logger.info("Creating response header with code " + code + " and " + lengthOfOutputFile + " bytes long body.");
+
         if (connection == null) {
             throw new HttpSocketServerException("Connection not found!");
         } else if (connection.isClosed()) {
@@ -63,7 +67,6 @@ public class HttpSocketServerResponse {
 
         writeLine("HTTP/1.1 " + code);
         writeLine("Connection: close");
-
         if (lengthOfOutputFile != 0) {
             writeLine("Content-Length: " + lengthOfOutputFile);
         }
@@ -82,10 +85,10 @@ public class HttpSocketServerResponse {
             });
             writeLine(b.toString());
         }
-
         // according to protocol, here should be a blank line
         writeLine("");
 
+        logger.info("Response header created.");
     }
 
     /**
@@ -96,6 +99,7 @@ public class HttpSocketServerResponse {
      */
     private void writeLine(String line) throws IOException {
         writer.writeBytes(line + "\n");
+        logger.finest("Response OutputStream writing: '" + line + "'");
     }
 
     /**
