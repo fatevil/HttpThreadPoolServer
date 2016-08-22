@@ -8,13 +8,17 @@ import java.nio.file.Paths;
 
 
 /**
+ * Handler used to determine access of user for specific location.
+ * <p>
  * Created by marek on 26.5.16.
  */
 public class AccessHandler {
 
     /**
+     * Checks if specified directory can by accessed by that user.
+     *
      * @param directory     in which to check .htaccess
-     * @param authorization - object containing user:password
+     * @param authorization contains user:password
      * @return true for approved access
      */
     public static boolean check(String directory, Authorization authorization) {

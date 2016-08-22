@@ -4,6 +4,8 @@ import fel.cvut.cz.utils.HashGenerator;
 import org.apache.commons.codec.binary.Base64;
 
 /**
+ * Keeps user authentication. Doesn't keep raw password, only encoded string.
+ * <p>
  * Created by marek on 26.5.16.
  */
 public class Authorization {
@@ -12,6 +14,11 @@ public class Authorization {
     private String username;
     private String password; // hashed
 
+    /**
+     * Default constructor accepting base64 string. It is encoded only if it's used.
+     *
+     * @param base64 encoded string
+     */
     public Authorization(String base64) {
         this.password = null;
         this.username = null;
@@ -32,6 +39,11 @@ public class Authorization {
         this.password = HashGenerator.createHash(decodedString.substring(index + 1));
     }
 
+    /**
+     * If it has not been already done, it decodes base64 and returns hashed password.
+     *
+     * @return hashed password
+     */
     public String getPassword() {
         if (username == null) {
             decodeBase64();
@@ -39,6 +51,9 @@ public class Authorization {
         return password;
     }
 
+    /**
+     * If it has not been already done, it decodes base64 and returns username.
+     */
     public String getUsername() {
         if (username == null) {
             decodeBase64();
@@ -46,6 +61,11 @@ public class Authorization {
         return username;
     }
 
+    /**
+     * If it has not been already done, it decodes base64 and returns string that looks like 'user:hashed_password'.
+     *
+     * @return string required in .htaccess file
+     */
     public String getLineFormat() {
         if (username == null) {
             decodeBase64();
