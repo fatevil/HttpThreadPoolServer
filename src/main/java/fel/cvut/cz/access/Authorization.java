@@ -3,12 +3,15 @@ package fel.cvut.cz.access;
 import fel.cvut.cz.utils.HashGenerator;
 import org.apache.commons.codec.binary.Base64;
 
+import java.util.logging.Logger;
+
 /**
  * Keeps user authentication. Doesn't keep raw password, only encoded string.
  * <p>
  * Created by marek on 26.5.16.
  */
 public class Authorization {
+    private static final Logger logger = Logger.getLogger(Authorization.class.getName());
 
     private final String base64;
     private String username;
@@ -26,10 +29,12 @@ public class Authorization {
     }
 
     private void decodeBase64() {
+        logger.info("Decoding base64.");
         // Decode data on other side, by processing encoded data
         if (base64.length() <= 5) {
             this.username = "";
             this.password = "";
+            logger.info("Decoding unsuccessful.");
             return;
         }
         byte[] valueDecoded = Base64.decodeBase64((base64.substring(5)));
@@ -37,6 +42,7 @@ public class Authorization {
         int index = decodedString.indexOf(":");
         this.username = decodedString.substring(0, index);
         this.password = HashGenerator.createHash(decodedString.substring(index + 1));
+        logger.info("Decoding successful for user '" + username + "'.");
     }
 
     /**

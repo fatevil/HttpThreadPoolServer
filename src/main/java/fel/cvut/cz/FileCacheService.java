@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * This singleton class is supposed to be used whenever is required work with files. It keeps files cached so repeatedly used files are directly returned and not searched for on HDD.
@@ -12,6 +13,8 @@ import java.util.Map;
  * Created by marek on 22.5.16.
  */
 public class FileCacheService {
+    private static final Logger logger = Logger.getLogger(FileCacheService.class.getName());
+
     private static final FileCacheService ourInstance = new FileCacheService();
     private final Map<String, SoftReference<File>> cache = new HashMap<>();
 
@@ -78,16 +81,16 @@ public class FileCacheService {
      */
     public boolean exists(String fullFileName) {
         if (cache.containsKey(fullFileName)) {
-            System.out.printf("%s found!%n", fullFileName);
+            logger.fine(String.format("%s found!%n", fullFileName));
             return true;
         } else {
             File f = new File(fullFileName);
             if (f.exists()) {
-                System.out.printf("%s found!%n", fullFileName);
+                logger.fine(String.format("%s found!%n", fullFileName));
                 return true;
             }
         }
-        System.out.printf("%s not found!%n", fullFileName);
+        logger.fine(String.format("%s not found!%n", fullFileName));
         return false;
     }
 }

@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class for creating folders and giving restricted access to it.
@@ -15,6 +17,7 @@ import java.util.List;
  * Created by marek on 22.5.16.
  */
 public class CustomFileUtils {
+    private static final Logger logger = Logger.getLogger(CustomFileUtils.class.getName());
 
     /**
      * Creates directory if it doesn't exist yet.
@@ -26,7 +29,7 @@ public class CustomFileUtils {
 
         // if the directory does not exist, create it
         if (!theDir.exists()) {
-            System.out.println("creating directory: " + directoryName);
+            logger.info("Creating directory: '" + directoryName + "'.");
             boolean result = false;
 
             try {
@@ -36,10 +39,10 @@ public class CustomFileUtils {
                 }
             } catch (SecurityException se) {
                 //handle it
-                se.printStackTrace();
+                logger.log(Level.WARNING, "Security exception during directory creation", se);
             }
             if (result) {
-                System.out.println("DIR created");
+                logger.info("Directory: '" + directoryName + "' created.");
             }
         }
     }
@@ -58,7 +61,7 @@ public class CustomFileUtils {
         List<String> lines = Arrays.asList("user:8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92");
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
-            System.out.printf("Created %s in %s%n", file.getFileName(), directory);
+            logger.info(String.format("Created %s in %s%n", file.getFileName(), directory));
         } catch (IOException e) {
             e.printStackTrace();
         }

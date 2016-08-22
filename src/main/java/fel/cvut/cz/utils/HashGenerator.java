@@ -2,6 +2,8 @@ package fel.cvut.cz.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class for creating hashed strings.
@@ -9,6 +11,8 @@ import java.security.NoSuchAlgorithmException;
  * Created by marek on 22.5.16.
  */
 public class HashGenerator {
+    private static final Logger logger = Logger.getLogger(HashGenerator.class.getName());
+
     /**
      * Creates hash from given string.
      *
@@ -16,6 +20,8 @@ public class HashGenerator {
      * @return hashed string
      */
     public static String createHash(String s) {
+        logger.fine("Creating hash for '" + s + "'.");
+
         String password = "123456";
         StringBuilder sb;
         MessageDigest md;
@@ -40,10 +46,12 @@ public class HashGenerator {
                 }
                 hexString.append(hex);
             }
+            logger.fine("Hash created.");
             return hexString.toString();
         } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Couldn't create hash!", ex);
         }
+        logger.log(Level.SEVERE, "Couldn't create hash, return null.");
         return null;
     }
 }
