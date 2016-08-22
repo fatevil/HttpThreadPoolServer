@@ -7,20 +7,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This singleton class is supposed to be used whenever is required work with files. It keeps files cached so repeatedly used files are directly returned and not searched for on HDD.
+ * <p>
  * Created by marek on 22.5.16.
  */
 public class FileCacheService {
     private static final FileCacheService ourInstance = new FileCacheService();
-
-    public final Map<String, SoftReference<File>> cache = new HashMap<>();
+    private final Map<String, SoftReference<File>> cache = new HashMap<>();
 
     private FileCacheService() {
     }
 
+    /**
+     * Gets the only instance of this class.
+     */
     public static FileCacheService getInstance() {
         return ourInstance;
     }
 
+    /**
+     * Gets File object from specified location. If the file is already in cache, return it, or add it and then return.
+     *
+     * @param fullFileName name of the requested file
+     * @return requested file
+     */
     public File get(String fullFileName) {
         File file = null;
         if (cache.containsKey(fullFileName)) {
@@ -36,6 +46,11 @@ public class FileCacheService {
         }
     }
 
+    /**
+     * Remove file from cache.
+     *
+     * @param fullFileName full name of removed file
+     */
     public void remove(String fullFileName) {
         cache.remove(fullFileName);
     }
@@ -55,6 +70,12 @@ public class FileCacheService {
         return null;
     }
 
+    /**
+     * Figures out if the specified file exists. At first looks to cache, then to its location on disc.
+     *
+     * @param fullFileName full name of requested file
+     * @return true if it exists on disc, false otherwise
+     */
     public boolean exists(String fullFileName) {
         if (cache.containsKey(fullFileName)) {
             System.out.printf("%s found!%n", fullFileName);
