@@ -21,10 +21,10 @@ public class GetHandler implements HttpSocketServerHandler {
     private static final Logger logger = Logger.getLogger(GetHandler.class.getName());
 
     /**
-     * Sends back byte array using HttpExchangeService.
+     * Sends file and feedback to client.
      *
-     * @param request
-     * @param response
+     * @param request  contains task specifics
+     * @param response performs response action
      */
     @Override
     public void handle(HttpSocketServerRequest request, HttpSocketServerResponse response) {

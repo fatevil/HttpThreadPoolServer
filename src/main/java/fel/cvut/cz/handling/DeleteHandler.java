@@ -18,7 +18,12 @@ import java.util.logging.Logger;
 public class DeleteHandler implements HttpSocketServerHandler {
     private static final Logger logger = Logger.getLogger(DeleteHandler.class.getName());
 
-
+    /**
+     * Deletes file and gives feedback to client.
+     *
+     * @param request  contains task specifics
+     * @param response performs response action
+     */
     @Override
     public void handle(HttpSocketServerRequest request, HttpSocketServerResponse response) {
         logger.fine("Handling DELETE request on " + request.getRequestURI());

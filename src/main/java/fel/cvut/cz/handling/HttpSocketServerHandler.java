@@ -13,8 +13,8 @@ public interface HttpSocketServerHandler {
     /**
      * Solves HTTP request and makes response.
      *
-     * @param httpSocketServerRequest  request specifics
-     * @param httpSocketServerResponse response mediator
+     * @param httpSocketServerRequest  contains task specifics
+     * @param httpSocketServerResponse performs response action
      */
     void handle(HttpSocketServerRequest httpSocketServerRequest, HttpSocketServerResponse httpSocketServerResponse);
 

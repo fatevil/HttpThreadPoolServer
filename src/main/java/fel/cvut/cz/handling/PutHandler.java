@@ -19,7 +19,7 @@ public class PutHandler implements HttpSocketServerHandler {
      * Creates file from input stream using HttpExchangeService, gives response.
      *
      * @param request  contains task specifics
-     * @param response performs the response action
+     * @param response performs response action
      */
     @Override
     public void handle(HttpSocketServerRequest request, HttpSocketServerResponse response) {
