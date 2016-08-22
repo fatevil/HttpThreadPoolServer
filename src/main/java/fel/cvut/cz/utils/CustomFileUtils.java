@@ -10,9 +10,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Utility class for creating folders and giving restricted access to it.
+ * <p>
  * Created by marek on 22.5.16.
  */
 public class CustomFileUtils {
+
+    /**
+     * Creates directory if it doesn't exist yet.
+     *
+     * @param directoryName created folder
+     */
     public static void createDirIfNotExists(String directoryName) {
         File theDir = new File(directoryName);
 
@@ -37,9 +45,9 @@ public class CustomFileUtils {
     }
 
     /**
-     * Creates .htaccess file with permission given to testing user "user:password".
+     * Creates .htaccess file with testing user "user:password".
      *
-     * @param directory be locked by .htacces
+     * @param directory restricted folder
      */
     public static void putHtaccessToDir(String directory) {
         Path file = Paths.get(String.format("%s/.htaccess", directory));

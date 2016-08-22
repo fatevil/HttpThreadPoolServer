@@ -4,10 +4,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Utility class for creating hashed strings.
+ * <p>
  * Created by marek on 22.5.16.
  */
 public class HashGenerator {
-
+    /**
+     * Creates hash from given string.
+     *
+     * @param s original string
+     * @return hashed string
+     */
     public static String createHash(String s) {
         String password = "123456";
         StringBuilder sb;
