@@ -9,6 +9,8 @@ import fel.cvut.cz.server.HttpSocketServerResponse;
 import java.io.*;
 
 /**
+ * Puts together most often used actions performed on HTTP requests and responses. Works with HttpSocketServerRequest and HttpSocketServerResponse only.
+ * <p>
  * Created by marek on 26.5.16.
  */
 public class HttpExchangeSerivce {
@@ -20,6 +22,10 @@ public class HttpExchangeSerivce {
     private Authorization authorization;
     private Boolean textNotFile = null;
 
+    /**
+     * @param request  contains request specifics
+     * @param response contains response specifics and output stream
+     */
     public HttpExchangeSerivce(HttpSocketServerRequest request, HttpSocketServerResponse response) {
         this.request = request;
         this.response = response;
