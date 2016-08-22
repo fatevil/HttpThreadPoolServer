@@ -26,12 +26,14 @@ public class HttpExchangeSerivce {
     }
 
     /**
-     * Text files are given to dir :web_content. - default for PUT
+     * Determines whether the request is for static content or binary files.
      * <p>
-     * Other files are given to dir: files -  default for other methods
+     * Text files are given to dir: 'web_content' - default for PUT
+     * <p>
+     * Other files are given to dir: 'files' -  default for other methods
      * <p>
      *
-     * @return wheter to put files to dir "files" or "web_content"
+     * @return whether to put files to files or web content dir
      */
     public boolean isTextNotFile() {
         if (textNotFile == null) {
@@ -49,10 +51,12 @@ public class HttpExchangeSerivce {
                 }
             }
         }
-
         return textNotFile;
     }
 
+    /**
+     * Gets name of the requested file separated from the address. For empty string it gives "index.html".
+     */
     public String getTargetFile() {
         if (file == null) {
             if (isTextNotFile()) {
@@ -68,6 +72,9 @@ public class HttpExchangeSerivce {
         return file;
     }
 
+    /**
+     * Gets name of the directory that the requested file is in.
+     */
     public String getTargetDirectory() {
         if (directory == null) {
             this.directory = getTargetFile().substring(0, getTargetFile().lastIndexOf("/"));
@@ -75,6 +82,9 @@ public class HttpExchangeSerivce {
         return directory;
     }
 
+    /**
+     * Gets request authorization info.
+     */
     public Authorization getAuthorization() {
         if (request.getRequestHeaders().containsKey("Authorization")) {
             authorization = new Authorization(request.getRequestHeaders().getFirst("Authorization"));
@@ -82,10 +92,23 @@ public class HttpExchangeSerivce {
         return authorization;
     }
 
+    /**
+     * Puts text message to body of the response and closes the stream. Translates string to byte array and uses {@see #sendResponseAndClose}
+     *
+     * @param code    http code for client
+     * @param message text displayed to client
+     */
     public void sendTextResponseAndClose(int code, String message) {
         sendResponseAndClose(code, message.getBytes(), message.length());
     }
 
+    /**
+     * Puts byte array to body of the response and closes the stream.
+     *
+     * @param code               http code for client
+     * @param bytearray          bytes to be sent to client
+     * @param lengthOfOutputFile length of the byte array
+     */
     public void sendResponseAndClose(int code, byte[] bytearray, long lengthOfOutputFile) {
         try (OutputStream os = response.getResponseBody()) {
             response.sendResponseHeaders(code, lengthOfOutputFile);
@@ -97,11 +120,21 @@ public class HttpExchangeSerivce {
         }
     }
 
+    /**
+     * Puts line to header of the response.
+     *
+     * @param key   name of header
+     * @param value information in header
+     */
     public void addResponseHeader(String key, String value) {
         response.getResponseHeaders().add(key, value);
     }
 
-
+    /**
+     * Translates bytes from stream to specified file.
+     *
+     * @param destinationFile location of the new file
+     */
     public void saveFileFromRequestHeader(File destinationFile) {
         int i;
         InputStream input;
