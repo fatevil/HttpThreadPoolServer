@@ -1,6 +1,7 @@
 import fel.cvut.cz.Server;
 import fel.cvut.cz.utils.CustomFileUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -20,11 +21,28 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by marek on 22.5.16.
  */
-public class PutHandlerTest extends AbstractTest {
+public class PutHandlerTest {
     private static final Logger logger = Logger.getLogger(PutHandlerTest.class.getName());
 
+    private static Server server;
+
+    @BeforeClass
+    public static void setUp() throws IOException, InterruptedException {
+        //TODO:tests wont work when they're all instantiated at once, it must be done one by one (classes)
+
+        logger.info("Setting up abstract test class!");
+        server = new Server(8002);
+        Thread t = new Thread(server);
+        t.start();
+
+        CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        logger.info("Abstract test class set up.");
+        Thread.sleep(1000);
+    }
+
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         server.terminate();
         try {
             Files.deleteIfExists(Paths.get("tested_file.txt"));
@@ -40,7 +58,7 @@ public class PutHandlerTest extends AbstractTest {
     @Test
     public void testHandlePut() throws Exception {
         CustomFileUtils.createTestingFile("tested_file.txt");
-        String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
+        String url = "http://localhost:8002/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -77,7 +95,7 @@ public class PutHandlerTest extends AbstractTest {
     @Test
     public void testHandlePutRestricted() throws Exception {
         CustomFileUtils.createTestingFile("tested_file.txt");
-        String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
+        String url = "http://localhost:8002/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

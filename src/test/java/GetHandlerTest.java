@@ -1,6 +1,7 @@
 import fel.cvut.cz.Server;
 import fel.cvut.cz.utils.CustomFileUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -21,11 +22,28 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by marek on 22.5.16.
  */
-public class GetHandlerTest extends AbstractTest {
+public class GetHandlerTest {
     private static final Logger logger = Logger.getLogger(GetHandlerTest.class.getName());
 
+    private static Server server;
+
+    @BeforeClass
+    public static void setUp() throws IOException, InterruptedException {
+        //TODO:tests wont work when they're all instantiated at once, it must be done one by one (classes)
+
+        logger.info("Setting up abstract test class!");
+        server = new Server(8001);
+        Thread t = new Thread(server);
+        t.start();
+
+        CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        logger.info("Abstract test class set up.");
+        Thread.sleep(1000);
+    }
+
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         server.terminate();
         try {
             Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/.htaccess", Server.FILES_DIR)));
@@ -39,7 +57,7 @@ public class GetHandlerTest extends AbstractTest {
 
     @Test
     public void testHandleStaticContent() throws Exception {
-        String url = "http://localhost:8000/index.html";
+        String url = "http://localhost:8001/index.html";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -72,7 +90,7 @@ public class GetHandlerTest extends AbstractTest {
     public void testHandleRestrictedFileSuccess() throws Exception {
         createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
-        String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
+        String url = "http://localhost:8001/forbidden_folder/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -108,7 +126,7 @@ public class GetHandlerTest extends AbstractTest {
     public void testHandleRestrictedFileFail() throws Exception {
         CustomFileUtils.createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
-        String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
+        String url = "http://localhost:8001/forbidden_folder/tested_file.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

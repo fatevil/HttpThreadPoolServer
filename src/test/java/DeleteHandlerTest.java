@@ -1,6 +1,7 @@
 import fel.cvut.cz.Server;
 import fel.cvut.cz.utils.CustomFileUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -20,11 +21,26 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by marek on 22.5.16.
  */
-public class DeleteHandlerTest extends AbstractTest {
+public class DeleteHandlerTest {
     private static final Logger logger = Logger.getLogger(DeleteHandlerTest.class.getName());
 
+    private static Server server;
+
+    @BeforeClass
+    public static void setUp() throws IOException, InterruptedException {
+        logger.info("Setting up abstract test class!");
+        server = new Server(8000);
+        Thread t = new Thread(server);
+        t.start();
+
+        CustomFileUtils.createDirIfNotExists(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        CustomFileUtils.putHtaccessToDir(String.format("%s/forbidden_folder_test", Server.FILES_DIR));
+        logger.info("Abstract test class set up.");
+        Thread.sleep(1000);
+    }
+
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         server.terminate();
         try {
             Files.deleteIfExists(Paths.get("test_file_to_be_deleted.txt"));

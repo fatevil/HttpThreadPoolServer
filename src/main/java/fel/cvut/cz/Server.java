@@ -37,15 +37,28 @@ import java.util.logging.Logger;
  * Created by marek on 21.5.16.
  */
 public class Server implements Runnable {
-    public static final int SERVER_PORT = 8000;
     public static final String FILES_DIR = "files";
     public static final String CONTENT_DIR = "web_content";
     private static final Logger logger = Logger.getLogger(Server.class.getName());
-
+    private int port;
     private HttpSocketServer httpServer;
 
+    public Server(int port) {
+        this.port = port;
+    }
+
+    public Server() {
+        this(8000);
+    }
+
+
     public static void main(String[] args) throws Exception {
-        Server server = new Server();
+        Server server;
+        if (args.length == 1) {
+            server = new Server(Integer.valueOf(args[0]));
+        } else {
+            server = new Server();
+        }
         server.run();
     }
 
@@ -64,7 +77,7 @@ public class Server implements Runnable {
      */
     @Override
     public void run() {
-        httpServer = new HttpSocketServer(SERVER_PORT);
+        httpServer = new HttpSocketServer(port);
         httpServer.setHandler(new RequestHandler());
 
         setupFolders();
@@ -75,7 +88,7 @@ public class Server implements Runnable {
 
         }
         httpServer.start();
-        logger.info("Server started on port " + SERVER_PORT);
+        logger.info("Server started on port " + port);
     }
 
     /**
