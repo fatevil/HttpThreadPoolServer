@@ -55,7 +55,7 @@ public class HttpSocketServerResponse {
         this.code = code;
         this.lengthOfOutputFile = lengthOfOutputFile;
 
-        logger.info("Creating response header with code " + code + " and " + lengthOfOutputFile + " bytes long body.");
+        logger.info("Creating response header with code " + code + " and " + lengthOfOutputFile + " byte body.");
 
         if (connection == null) {
             throw new HttpSocketServerException("Connection not found!");
