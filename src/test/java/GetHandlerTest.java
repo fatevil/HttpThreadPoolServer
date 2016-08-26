@@ -1,14 +1,20 @@
 import fel.cvut.cz.Server;
+import fel.cvut.cz.utils.CustomFileUtils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import static fel.cvut.cz.utils.CustomFileUtils.createTestingFile;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -16,6 +22,20 @@ import static org.junit.Assert.assertTrue;
  * Created by marek on 22.5.16.
  */
 public class GetHandlerTest extends AbstractTest {
+    private static final Logger logger = Logger.getLogger(GetHandlerTest.class.getName());
+
+    @AfterClass
+    public static void tearDown() {
+        server.terminate();
+        try {
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/.htaccess", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/tested_file.txt", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test", Server.FILES_DIR)));
+            logger.info("Test files deleted!");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Test class couldn't delete test files!", e);
+        }
+    }
 
     @Test
     public void testHandleStaticContent() throws Exception {
@@ -88,7 +108,7 @@ public class GetHandlerTest extends AbstractTest {
 
     @Test
     public void testHandleRestrictedFileFail() throws Exception {
-        createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
+        CustomFileUtils.createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
         String url = "http://localhost:8000/forbidden_folder/tested_file.txt";
 

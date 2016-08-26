@@ -1,13 +1,18 @@
 import fel.cvut.cz.Server;
+import fel.cvut.cz.utils.CustomFileUtils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,11 +21,25 @@ import static org.junit.Assert.assertTrue;
  * Created by marek on 22.5.16.
  */
 public class PutHandlerTest extends AbstractTest {
+    private static final Logger logger = Logger.getLogger(PutHandlerTest.class.getName());
 
+    @AfterClass
+    public static void tearDown() {
+        server.terminate();
+        try {
+            Files.deleteIfExists(Paths.get("tested_file.txt"));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/.htaccess", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/tested_file.txt", Server.FILES_DIR)));
+            Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test", Server.FILES_DIR)));
+            logger.info("Test files deleted!");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Test class couldn't delete test files!", e);
+        }
+    }
 
     @Test
     public void testHandlePut() throws Exception {
-        createTestingFile("tested_file.txt");
+        CustomFileUtils.createTestingFile("tested_file.txt");
         String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);
@@ -57,7 +76,7 @@ public class PutHandlerTest extends AbstractTest {
 
     @Test
     public void testHandlePutRestricted() throws Exception {
-        createTestingFile("tested_file.txt");
+        CustomFileUtils.createTestingFile("tested_file.txt");
         String url = "http://localhost:8000/forbidden_folder_test/tested_file.txt";
 
         URL obj = new URL(url);

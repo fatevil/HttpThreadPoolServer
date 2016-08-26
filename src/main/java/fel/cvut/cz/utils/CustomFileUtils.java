@@ -66,4 +66,19 @@ public class CustomFileUtils {
             e.printStackTrace();
         }
     }
+
+    public static void createTestingFile(String name) {
+        Path file = Paths.get(name);
+        if (Files.exists(file)) {
+            return;
+        }
+
+        List<String> lines = Arrays.asList("Hi there! This is a test file and it should be retrieved by remote client!");
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+            logger.info(String.format("Created %s \n", name));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

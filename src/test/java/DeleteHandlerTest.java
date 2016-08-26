@@ -1,4 +1,6 @@
 import fel.cvut.cz.Server;
+import fel.cvut.cz.utils.CustomFileUtils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -7,6 +9,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,11 +21,22 @@ import static org.junit.Assert.assertTrue;
  * Created by marek on 22.5.16.
  */
 public class DeleteHandlerTest extends AbstractTest {
+    private static final Logger logger = Logger.getLogger(DeleteHandlerTest.class.getName());
 
+    @AfterClass
+    public static void tearDown() {
+        server.terminate();
+        try {
+            Files.deleteIfExists(Paths.get("test_file_to_be_deleted.txt"));
+            logger.info("Test file deleted!");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't delete test files!", e);
+        }
+    }
 
     @Test
     public void testHandle() throws Exception {
-        createTestingFile(Server.FILES_DIR + "/test_file_to_be_deleted.txt");
+        CustomFileUtils.createTestingFile(Server.FILES_DIR + "/test_file_to_be_deleted.txt");
 
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
