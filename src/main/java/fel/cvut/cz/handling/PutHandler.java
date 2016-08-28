@@ -26,7 +26,11 @@ public class PutHandler implements HttpSocketServerHandler {
         logger.fine("Handling PUT request on " + request.getRequestURI());
 
         HttpExchangeSerivce service = new HttpExchangeSerivce(request, response);
-        if (!AccessHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
+        if (!request.getRequestHeaders().containsKey("Content-type")) {
+            service.sendTextResponseAndClose(406, "Request must contain 'Content-type' header!");
+            logger.fine("Header doesn't contain 'Content-type' info, no file accepted!");
+            return;
+        } else if (!AccessHandler.check(service.getTargetDirectory(), service.getAuthorization())) {
             service.sendTextResponseAndClose(403, "Access restricted!");
             logger.fine("Access to requested location is restricted, no file accepted!");
             return;
