@@ -20,6 +20,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * // TODO: Put individual functions to separate test classes
+ * <p>
  * Created by marek on 22.5.16.
  */
 public class GetHandlerTest {
@@ -29,8 +31,7 @@ public class GetHandlerTest {
 
     @BeforeClass
     public static void setUp() throws IOException, InterruptedException {
-        //TODO:tests wont work when they're all instantiated at once, it must be done one by one (classes)
-
+        /* Start server, create necessary folders and wait for connection. */
         logger.info("Setting up abstract test class!");
         server = new Server(8001);
         Thread t = new Thread(server);
@@ -44,6 +45,7 @@ public class GetHandlerTest {
 
     @AfterClass
     public static void tearDown() throws InterruptedException {
+        /* Shutdown server and clean up.*/
         server.terminate();
         try {
             Files.deleteIfExists(Paths.get(String.format("%s/forbidden_folder_test/.htaccess", Server.FILES_DIR)));
@@ -57,16 +59,16 @@ public class GetHandlerTest {
 
     @Test
     public void testHandleStaticContent() throws Exception {
+        /* Send GET request and expect response code 200. Accepted file should be the same bytes as file located on disc.*/
         String url = "http://localhost:8001/index.html";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
         con.setRequestMethod("GET");
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
+        logger.info("\nSending 'GET' request to URL : " + url);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -88,6 +90,7 @@ public class GetHandlerTest {
 
     @Test
     public void testHandleRestrictedFileSuccess() throws Exception {
+        /* Send GET request on file with restricted access and expect response code 200. Accepted file should be the same bytes as file located on disc.*/
         createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
         String url = "http://localhost:8001/forbidden_folder/tested_file.txt";
@@ -95,13 +98,12 @@ public class GetHandlerTest {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
         con.setRequestProperty("Accept", "application/x-www-form-urlencoded");
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
+        logger.info("\nSending 'GET' request to URL : " + url);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -124,6 +126,7 @@ public class GetHandlerTest {
 
     @Test
     public void testHandleRestrictedFileFail() throws Exception {
+        /* Send GET request on file with restricted access and expect response code 403. File should not be retrieved because of unauthorized access.*/
         CustomFileUtils.createTestingFile(Server.FILES_DIR + "/forbidden_folder/tested_file.txt");
 
         String url = "http://localhost:8001/forbidden_folder/tested_file.txt";
@@ -131,12 +134,11 @@ public class GetHandlerTest {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
         con.setRequestMethod("GET");
         con.setRequestProperty("Accept", "application/x-www-form-urlencoded");
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
+        logger.info("\nSending 'GET' request to URL : " + url);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getErrorStream()));

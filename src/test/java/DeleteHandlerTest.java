@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * // TODO: Put individual functions to separate test classes
+ * <p>
  * Created by marek on 22.5.16.
  */
 public class DeleteHandlerTest {
@@ -28,6 +30,7 @@ public class DeleteHandlerTest {
 
     @BeforeClass
     public static void setUp() throws IOException, InterruptedException {
+        /* Start server, create necessary folders and wait for connection. */
         logger.info("Setting up abstract test class!");
         server = new Server(8000);
         Thread t = new Thread(server);
@@ -41,6 +44,7 @@ public class DeleteHandlerTest {
 
     @AfterClass
     public static void tearDown() throws InterruptedException {
+        /* Shutdown server and clean up.*/
         server.terminate();
         try {
             Files.deleteIfExists(Paths.get("test_file_to_be_deleted.txt"));
@@ -52,6 +56,7 @@ public class DeleteHandlerTest {
 
     @Test
     public void testHandle() throws Exception {
+        /* Send DELETE request and expect response code 200. Target file should be deleted from the disc.*/
         CustomFileUtils.createTestingFile(Server.FILES_DIR + "/test_file_to_be_deleted.txt");
 
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
@@ -59,13 +64,13 @@ public class DeleteHandlerTest {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
         con.setRequestMethod("DELETE");
         con.setRequestProperty("Content-Type", "*/*");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'DELETE' request to URL : " + url);
+        logger.info("\nSending 'DELETE' request to URL : " + url);
+
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -83,18 +88,18 @@ public class DeleteHandlerTest {
 
     @Test
     public void testHandleNonExistingFile() throws IOException, InterruptedException {
+        /* Send GET request and expect response code 404.*/
         String url = "http://localhost:8000/test_file_to_be_deleted.txt";
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // optional default is GET
         con.setRequestMethod("DELETE");
         con.setRequestProperty("Content-Type", "*/*");
         con.setRequestProperty("Authorization", "Basic dXNlcjpwYXNzd29yZA==");
 
         int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'DELETE' request to URL : " + url);
+        logger.info("\nSending 'DELETE' request to URL : " + url);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getErrorStream()));
